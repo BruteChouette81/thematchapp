@@ -1,0 +1,22 @@
+TheMatchApp
+
+Version: 0.1 (beta)
+
+Pages: 
+    Home:
+        - list of events 
+        - map 
+
+    Account:
+        -image / pp
+        - infos
+    
+    Calendar: 
+        - simple calendar 
+
+DB:
+
+- users infos
+- events DB
+- calendar DB
+- match making 
