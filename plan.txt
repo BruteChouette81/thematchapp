@@ -5,14 +5,18 @@ Version: 0.1 (beta)
 Pages: 
     Home:
         - list of events 
-        - map 
+        - map ==> add pin point in db //https://developers.google.com/maps/flutter-package/config#android_1
+        - connected or not
+    
+    Nav:
+        - option to disconnect => statefull widget
 
     Account:
-        -image / pp
+        - image / pp
         - infos
     
     Calendar: 
-        - simple calendar 
+        - simple calendar // https://medium.com/flutter-community/flutter-use-google-calendar-api-adding-the-events-to-calendar-3d8fcb008493
 
 DB:
 
@@ -20,3 +24,11 @@ DB:
 - events DB
 - calendar DB
 - match making 
+
+
+Match making algo:
+
+Elo rating users to connect with events 
+
+calitative score: embbed different qualities and produce a sigmoid output for likelyness 
+then compare score to create a Elo rating of match and get a top K f.e 10 match

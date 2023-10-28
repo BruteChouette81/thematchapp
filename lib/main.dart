@@ -5,7 +5,13 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 
+import './profilepage.dart';
+
 import 'package:http/http.dart' as http; //http package
+
+import 'package:google_maps_flutter/google_maps_flutter.dart'; //google maps package
+
+import 'dart:io';
 
 void main() {
   runApp(const MyApp());
@@ -43,6 +49,8 @@ class NewEventForm extends StatefulWidget {
 class _NewEventForm extends State<NewEventForm> {
   final myController = TextEditingController();
 
+  bool mapDisplay = false;
+
   Future<http.Response> testAPI() {
     return http.post(Uri.parse('http://localhost:8000/newEvent'), headers: <String, String>{
       'content-type': 'application/json',
@@ -64,9 +72,15 @@ class _NewEventForm extends State<NewEventForm> {
     print(response);
   }
 
+  void _displayMap() {
+    setState(() {
+      mapDisplay=true;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return mapDisplay ? const GMPage() : Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
          Padding(
@@ -83,7 +97,11 @@ class _NewEventForm extends State<NewEventForm> {
           child: ElevatedButton(
           onPressed: _submitEvent,
           child: const Text('Submit'),
-         )) ,   
+         )) ,  
+        Center(child: ElevatedButton(
+          onPressed: _displayMap,
+          child: const Text('Map view'),
+         )) 
       ],
     );
   }
@@ -99,14 +117,151 @@ class TMA extends StatefulWidget {
   @override
   State<TMA> createState() => _HomePageState();
 }
+//navbar
+
+class NavDrawer extends StatefulWidget {
+  const NavDrawer({super.key, required this.ip, required this.connected});
+
+  // config statefull widget
+
+  final String ip;
+  final bool connected;
+
+  @override
+  State<NavDrawer> createState() => _NavDrawer();
+}
+
+class _NavDrawer extends State<NavDrawer> {
+
+  Future disconnect() async {
+     final response = await http
+      .post(Uri.parse('http://localhost:8000/disconnect'), headers: <String, String>{
+      'content-type': 'application/json',
+      'ip': widget.ip
+    });
+    print(response);
+  }
+  @override
+  Widget build(BuildContext context) {
+    return Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: <Widget>[
+          const DrawerHeader(
+            child: Text(
+              'Menu',
+              style: TextStyle(color: Colors.black, fontSize: 25),
+            )
+          ),
+          ListTile(
+            leading: const Icon(Icons.home),
+            title: const Text('Home'),
+            onTap: () {
+               Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const MyApp()),
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.verified_user),
+            title: const Text('Profile'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const Profile()),
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.settings),
+            title: const Text('Settings'),
+            onTap: () => {Navigator.of(context).pop()},
+          ),
+          ListTile(
+            leading: const Icon(Icons.question_answer),
+            title: const Text('FAQ'),
+            onTap: () => {Navigator.of(context).pop()},
+          ),
+          widget.connected ? ListTile(
+            leading: const Icon(Icons.exit_to_app),
+            title: const Text('Logout'),
+            onTap: () => {
+              disconnect()
+              },
+          ) : const Text(""),
+        ],
+      ),
+    );
+  }
+}
+
+//map page
+
+class GMPage extends StatefulWidget {
+  const GMPage({super.key});
+
+  // config statefull widget
+
+  @override
+  State<GMPage> createState() => _GoogleMapPage();
+}
+
+class _GoogleMapPage extends State<GMPage> {
+  late GoogleMapController mapController;
+
+  final LatLng _center = const LatLng(-33.86, 151.20);
+
+  void _onMapCreated(GoogleMapController controller) {
+    mapController = controller;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    //build UI function
+    return Scaffold(
+      appBar: AppBar(
+        //navigation
+        
+        backgroundColor: Colors.green[300],
+        title: const Text("Map selector"),
+      ),
+      body: GoogleMap(
+                onMapCreated: _onMapCreated,
+                initialCameraPosition: CameraPosition(
+                  target: _center,
+                  zoom: 11.0,
+                ),
+          ),
+    );
+  }
+}
+
+/*
+late GoogleMapController mapController;
+      
+        final LatLng _center = const LatLng(-33.86, 151.20);
+      
+        void _onMapCreated(GoogleMapController controller) {
+          mapController = controller;
+        }
+*/
+
+//Home page
 
 class _HomePageState extends State<TMA> {
   int _counter = 0;
   bool _formActive = false;
+  bool connected = false;
+  String iip = "";
   final _listOfEvents = <String>[];
   final _homeWidgets = <Widget>[];
 
   Future loadEvents() async {
+    var interface = await NetworkInterface.list();
+    String ip = interface[0].addresses[0].address;
+    iip = ip;
+
     final response = await http
       .get(Uri.parse('http://localhost:8000/events'));
 
@@ -122,10 +277,21 @@ class _HomePageState extends State<TMA> {
       //update the state at refreash
       setState(() {
         _homeWidgets.clear();
-        for (int i=0; i<events["events"].length; i++) {
-          
-          _homeWidgets.add(Text('$i'));
+        if (events["events"].length > 0) {
+          for (int i=0; i<events["events"].length; i++) {
+            String eventName = events["events"][i];
+            _homeWidgets.add(Text(eventName));
+          }
+        } else {
+          _homeWidgets.add(const Text("No current Events..."));
         }
+
+        for (int i = 0; i<events["connected"].length; i++) {
+          if(ip == events["connected"][i]) {
+            connected = true;
+          }
+        }
+        
       });
         
 
@@ -133,7 +299,7 @@ class _HomePageState extends State<TMA> {
     } else {
       // If the server did not return a 200 OK response,
       // then throw an exception.
-      throw Exception('Failed to load album');
+      throw Exception('ERROR: Failed to load events');
     }
   }
 
@@ -179,18 +345,22 @@ class _HomePageState extends State<TMA> {
       
     });
   }
+  /*
+  leading: const IconButton(
+          icon: Icon(Icons.menu),
+          tooltip: 'Navigation menu'
+          onPressed: NavDrawer(),
+          
+        ), */
 
   @override
   Widget build(BuildContext context) {
     //build UI function
     return Scaffold(
+      drawer: NavDrawer(ip: iip, connected: connected),
       appBar: AppBar(
         //navigation
-        leading: const IconButton(
-          icon: Icon(Icons.menu),
-          tooltip: 'Navigation menu',
-          onPressed: null,
-        ),
+        
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
@@ -207,7 +377,7 @@ class _HomePageState extends State<TMA> {
           children: _homeWidgets
         ),
       ),
-      floatingActionButton: !_formActive ? FloatingActionButton(
+      floatingActionButton: connected ? !_formActive ? FloatingActionButton(
         onPressed: _activateForm,
         tooltip: 'Create',
         child: const Icon(Icons.add),
@@ -215,6 +385,26 @@ class _HomePageState extends State<TMA> {
         onPressed: _activateForm,
         tooltip: 'Cancel',
         child: const Icon(Icons.cancel),
+      ) : FloatingActionButton(
+        onPressed: () => showDialog<String>(
+          context: context,
+          builder: (BuildContext context) => AlertDialog(
+            title: const Text('You must be connected in order to create events.'),
+            content: const Text('Click on the Profile section in order to create or connect to an account!'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.pop(context, 'Cancel'),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, 'OK'),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        ),
+        tooltip: 'Connect',
+        child: const Icon(Icons.login),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
