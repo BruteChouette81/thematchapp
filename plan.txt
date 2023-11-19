@@ -25,6 +25,18 @@ DB:
 - calendar DB
 - match making 
 
+---------------------------------
+
+- account
+
+- My calendar
+- post calendar
+- My post
+- map when scrolling
+- queueING
+- Setting page
+
+
 
 Match making algo:
 

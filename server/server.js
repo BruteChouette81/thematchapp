@@ -9,12 +9,13 @@ const app = express();
 let numberOfEvent = 0;
 let eventList = []
 
+//event characteristic for queueing 
+let eventInfos = [];
+
 //password indexed by user
 let userlist = [];
-let passlist = [];
 
 //live connected users
-
 let connectedUser = [
 ]
 
@@ -42,10 +43,50 @@ app.get('/events', (req, res) => {
 app.post('/newEvent', (req, res) => {
     console.log("EVENT: New event: " + req.headers.event_name)
     //console.log(req.headers.event_name)
-    numberOfEvent++;
+    
     eventList.push(req.headers.event_name)
+    eventInfos.push({"sub": req.headers.ip, "name": req.headers.event_name, "id": numberOfEvent, "coords": req.headers.coords, "date": req.headers.date})
+    numberOfEvent++;
     //console.log(res)
     res.json({"status": "ok"})
+})
+
+//users to queue to event
+app.post('/queue', (req, res) => {
+    for (let i =0; i<connectedUser.length; i++) {
+        if (connectedUser[i].ip == req.headers.ip) {
+            connectedUser[i].events.push(req.headers.id)
+            res.send("queued")
+        }
+    }
+
+
+})
+
+//list queued event 
+
+app.post('/queueList', (req, res) => {
+    let eventstopush = []
+    for (let i =0; i<connectedUser.length; i++) {
+        if (connectedUser[i].ip == req.headers.ip) {
+            let cu = connectedUser[i]
+            for (let i =0; i<cu.events.length; i++) {
+                eventstopush.push(eventInfos[cu.events[i]])
+            }
+        }
+    }
+    res.json({"events": eventstopush})
+})
+
+//get My posts
+app.post('/mypost', (req, res) => {
+    let myposts = []
+    for (let i =0; i<eventInfos.length; i++) {
+        if (eventInfos[i].sub == req.headers.ip) {
+            myposts.push(eventInfos[i])
+        }
+    }
+    res.json({"mp":myposts})
 })
 
 app.post('/signup', (req, res) => {
@@ -55,7 +96,7 @@ app.post('/signup', (req, res) => {
         userlist.push(req.headers.user_name);
         //passlist.push(req.headers.password);
         //connectedUser.push(req.headers.ip)
-        connectedUser.push({"ip": req.headers.ip, "name": req.headers.user_name, "password": req.headers.password, "connected": true})
+        connectedUser.push({"ip": req.headers.ip, "name": req.headers.user_name, "password": req.headers.password, "connected": true, "events": []})
         console.log("INFO: new user added")
         console.log(connectedUser)
         res.json({"status": "ok"})

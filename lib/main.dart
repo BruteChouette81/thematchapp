@@ -4,12 +4,16 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:latlong2/latlong.dart';
 
 import './profilepage.dart';
+import './myposts.dart';
+import './rastermap.dart';
 
 import 'package:http/http.dart' as http; //http package
 
-import 'package:google_maps_flutter/google_maps_flutter.dart'; //google maps package
+//import 'package:google_maps_flutter/google_maps_flutter.dart'; //google maps package
+import 'package:map/map.dart';
 
 import 'dart:io';
 
@@ -39,7 +43,7 @@ class MyApp extends StatelessWidget {
 
 class NewEventForm extends StatefulWidget {
   const NewEventForm({super.key});
-  
+
   @override
   State<NewEventForm> createState() => _NewEventForm();
 
@@ -48,13 +52,18 @@ class NewEventForm extends StatefulWidget {
 
 class _NewEventForm extends State<NewEventForm> {
   final myController = TextEditingController();
-
   bool mapDisplay = false;
+  
 
-  Future<http.Response> testAPI() {
+  Future<http.Response> createNewEvent() async {
+    var interface = await NetworkInterface.list();
+    String ip = interface[0].addresses[0].address;
     return http.post(Uri.parse('http://localhost:8000/newEvent'), headers: <String, String>{
       'content-type': 'application/json',
-      'event_name': myController.text
+      'event_name': myController.text,
+      'ip': ip,
+      'coords': "(0, 0)",
+      "date": "0-0-0"
     } );
   }
   
@@ -68,19 +77,41 @@ class _NewEventForm extends State<NewEventForm> {
 
   void _submitEvent() async {
     print("FORM: submited");
-    var response = await testAPI();
+    var response = await createNewEvent();
     print(response);
   }
 
   void _displayMap() {
     setState(() {
-      mapDisplay=true;
+      if (mapDisplay) {
+        mapDisplay = false;
+      } else {
+         mapDisplay=true;
+      } 
+     
     });
   }
+  /*Center(child: ElevatedButton(
+          onPressed: _displayMap,
+          child: const Text('Map view'),
+         )) */
 
   @override
   Widget build(BuildContext context) {
-    return mapDisplay ? const GMPage() : Column(
+    return mapDisplay ? Scaffold(
+      appBar: AppBar(
+        //navigation
+        
+        backgroundColor: Colors.green[300],
+        title: const Text("Map selector"),
+        leading: IconButton (
+                 icon: const Icon(Icons.arrow_back), 
+                 onPressed: _displayMap
+            ),
+      ),
+      body: const RasterMapPage() //add marker for events
+  
+      ) : Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
          Padding(
@@ -98,11 +129,12 @@ class _NewEventForm extends State<NewEventForm> {
           onPressed: _submitEvent,
           child: const Text('Submit'),
          )) ,  
-        Center(child: ElevatedButton(
+       Center(child: ElevatedButton(
           onPressed: _displayMap,
           child: const Text('Map view'),
-         )) 
-      ],
+         ))
+         
+      ], 
     );
   }
 }
@@ -178,12 +210,21 @@ class _NavDrawer extends State<NavDrawer> {
             title: const Text('Settings'),
             onTap: () => {Navigator.of(context).pop()},
           ),
-          ListTile(
-            leading: const Icon(Icons.question_answer),
-            title: const Text('FAQ'),
-            onTap: () => {Navigator.of(context).pop()},
-          ),
           widget.connected ? ListTile(
+            leading: const Icon(Icons.question_answer),
+            title: const Text('My Calendar'),
+            onTap: () => {Navigator.of(context).pop()},
+          ) : const Text(""),
+          widget.connected ? ListTile(
+            leading: const Icon(Icons.add_rounded),
+            title: const Text('My post'),
+            onTap: () => { Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const MyPosts()),
+              )
+            },
+          ) : const Text(""),
+           widget.connected ? ListTile(
             leading: const Icon(Icons.exit_to_app),
             title: const Text('Logout'),
             onTap: () => {
@@ -208,13 +249,15 @@ class GMPage extends StatefulWidget {
 }
 
 class _GoogleMapPage extends State<GMPage> {
-  late GoogleMapController mapController;
+  //late GoogleMapController mapController;
 
-  final LatLng _center = const LatLng(-33.86, 151.20);
+  
 
-  void _onMapCreated(GoogleMapController controller) {
-    mapController = controller;
-  }
+  //final LatLng _center = const LatLng(-33.86, 151.20);
+
+  //void _onMapCreated(GoogleMapController controller) {
+  //  mapController = controller;
+  //}
 
   @override
   Widget build(BuildContext context) {
@@ -226,14 +269,9 @@ class _GoogleMapPage extends State<GMPage> {
         backgroundColor: Colors.green[300],
         title: const Text("Map selector"),
       ),
-      body: GoogleMap(
-                onMapCreated: _onMapCreated,
-                initialCameraPosition: CameraPosition(
-                  target: _center,
-                  zoom: 11.0,
-                ),
-          ),
-    );
+      body: const RasterMapPage() //add marker for events
+  
+      );
   }
 }
 
@@ -280,7 +318,10 @@ class _HomePageState extends State<TMA> {
         if (events["events"].length > 0) {
           for (int i=0; i<events["events"].length; i++) {
             String eventName = events["events"][i];
-            _homeWidgets.add(Text(eventName));
+            _homeWidgets.add(Column(children: [Text(eventName), ElevatedButton(
+          onPressed: () => {},
+          child: const Text('Subscribe'),
+         )],));
           }
         } else {
           _homeWidgets.add(const Text("No current Events..."));
@@ -345,6 +386,7 @@ class _HomePageState extends State<TMA> {
       
     });
   }
+
   /*
   leading: const IconButton(
           icon: Icon(Icons.menu),

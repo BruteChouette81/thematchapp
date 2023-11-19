@@ -172,11 +172,14 @@ class _ConnectForm extends State<ConnectForm> {
             controller: myPassController,
           ),
         ),  
-        Center(
+         Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+          child: Center(
           child: ElevatedButton(
           onPressed: _submitEvent,
           child: const Text('Login'),
-         )) ,   
+         
+         ))) ,   
          Center(
           child: ElevatedButton(
           onPressed: _submitSignUp,
