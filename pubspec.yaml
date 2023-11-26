@@ -41,6 +41,7 @@ dependencies:
   latlong2: ^0.9.0
   map: ^1.4.2
   cached_network_image: ^3.3.0
+  table_calendar: ^3.0.9
 
 dev_dependencies:
   flutter_test:

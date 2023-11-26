@@ -5,6 +5,8 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:thematchapp/friends.dart';
+import 'package:thematchapp/myCalendar.dart';
 
 import './profilepage.dart';
 import './myposts.dart';
@@ -14,6 +16,7 @@ import 'package:http/http.dart' as http; //http package
 
 //import 'package:google_maps_flutter/google_maps_flutter.dart'; //google maps package
 import 'package:map/map.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 import 'dart:io';
 
@@ -53,6 +56,8 @@ class NewEventForm extends StatefulWidget {
 class _NewEventForm extends State<NewEventForm> {
   final myController = TextEditingController();
   bool mapDisplay = false;
+
+  DateTime _selectedDay = DateTime.now(); 
   
 
   Future<http.Response> createNewEvent() async {
@@ -63,7 +68,7 @@ class _NewEventForm extends State<NewEventForm> {
       'event_name': myController.text,
       'ip': ip,
       'coords': "(0, 0)",
-      "date": "0-0-0"
+      "date": '$_selectedDay'
     } );
   }
   
@@ -124,14 +129,29 @@ class _NewEventForm extends State<NewEventForm> {
             controller: myController,
           ),
         ), 
-        Center(
-          child: ElevatedButton(
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+          child: Center(
+            child: ElevatedButton(
+            onPressed: _displayMap,
+            child: const Text('Toggle Map'),
+          )) ),
+      Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+          child: Center(
+            child: TableCalendar(
+          firstDay: DateTime.utc(2010, 10, 16),
+          lastDay: DateTime.utc(2030, 3, 14),
+          focusedDay: _selectedDay,
+          onDaySelected: (selectedDay, focusedDay) {
+            setState(() {
+              _selectedDay = selectedDay;
+            });
+          },
+       )) ),   
+       Center(child: ElevatedButton(
           onPressed: _submitEvent,
           child: const Text('Submit'),
-         )) ,  
-       Center(child: ElevatedButton(
-          onPressed: _displayMap,
-          child: const Text('Map view'),
          ))
          
       ], 
@@ -205,15 +225,29 @@ class _NavDrawer extends State<NavDrawer> {
               );
             },
           ),
+          
           ListTile(
             leading: const Icon(Icons.settings),
             title: const Text('Settings'),
             onTap: () => {Navigator.of(context).pop()},
           ),
           widget.connected ? ListTile(
+            leading: const Icon(Icons.people),
+            title: const Text('Friends'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const Friends()),
+              );
+            },
+          ) : const Text(""),
+          widget.connected ? ListTile(
             leading: const Icon(Icons.question_answer),
             title: const Text('My Calendar'),
-            onTap: () => {Navigator.of(context).pop()},
+            onTap: () => {Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const MyCalendar()),
+              )},
           ) : const Text(""),
           widget.connected ? ListTile(
             leading: const Icon(Icons.add_rounded),
@@ -319,7 +353,13 @@ class _HomePageState extends State<TMA> {
           for (int i=0; i<events["events"].length; i++) {
             String eventName = events["events"][i];
             _homeWidgets.add(Column(children: [Text(eventName), ElevatedButton(
-          onPressed: () => {},
+          onPressed:  () => { 
+            http
+      .post(Uri.parse('http://localhost:8000/queue'), headers: {
+      'content-type': 'application/json',
+      'ip': ip,
+      'id': events['eventInfos'][i]['id'].toString(),
+    })}, //
           child: const Text('Subscribe'),
          )],));
           }

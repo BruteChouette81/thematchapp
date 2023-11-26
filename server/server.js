@@ -36,7 +36,7 @@ app.get('/events', (req, res) => {
             connected_users.push(connectedUser[i].ip)
         }
     }
-    res.json({"events": eventList, "connected": connected_users});
+    res.json({"events": eventList, "connected": connected_users, "eventInfos": eventInfos});
     
 })
 
@@ -59,8 +59,27 @@ app.post('/queue', (req, res) => {
             res.send("queued")
         }
     }
+})
 
+//add new dispo
+app.post('/addDispo', (req, res) => {
+    for (let i =0; i<connectedUser.length; i++) {
+        if (connectedUser[i].ip == req.headers.ip) {
+            connectedUser[i].dispo.push(req.headers.date)
+            res.send("queued")
+        }
+    }
+})
 
+//list all dispos
+app.post('/listDispo', (req, res) => {
+    
+    for (let i =0; i<connectedUser.length; i++) {
+        if (connectedUser[i].ip == req.headers.ip) {
+            res.json({"dispo": connectedUser[i].dispo})
+        }
+    }
+   
 })
 
 //list queued event 
@@ -96,7 +115,7 @@ app.post('/signup', (req, res) => {
         userlist.push(req.headers.user_name);
         //passlist.push(req.headers.password);
         //connectedUser.push(req.headers.ip)
-        connectedUser.push({"ip": req.headers.ip, "name": req.headers.user_name, "password": req.headers.password, "connected": true, "events": []})
+        connectedUser.push({"ip": req.headers.ip, "name": req.headers.user_name, "password": req.headers.password, "connected": true, "events": [], "dispo": []})
         console.log("INFO: new user added")
         console.log(connectedUser)
         res.json({"status": "ok"})

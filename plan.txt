@@ -4,36 +4,38 @@ Version: 0.1 (beta)
 
 Pages: 
     Home:
-        - list of events 
+        - list of events DONE ✔️
         - map ==> add pin point in db //https://developers.google.com/maps/flutter-package/config#android_1
-        - connected or not
+        - connected or not DONE ✔️
     
     Nav:
-        - option to disconnect => statefull widget
+        - option to disconnect => statefull widget DONE ✔️
 
     Account:
         - image / pp
-        - infos
+        - infos DONE ✔️
+        - add calendar disponibility and queued Match
     
     Calendar: 
-        - simple calendar // https://medium.com/flutter-community/flutter-use-google-calendar-api-adding-the-events-to-calendar-3d8fcb008493
+        - simple calendar // https://medium.com/flutter-community/flutter-use-google-calendar-api-adding-the-events-to-calendar-3d8fcb008493 DONE ✔️
 
 DB:
 
-- users infos
-- events DB
-- calendar DB
+- users infos DONE ✔️
+- events DB DONE ✔️
+- calendar DB DONE ✔️
 - match making 
 
 ---------------------------------
 
 - account
 
-- My calendar
-- post calendar
-- My post
+- My calendar DONE ✔️
+- post calendar DONE ✔️
+- post map DONE ✔️ ==> add pin points
+- My post DONE ✔️
 - map when scrolling
-- queueING
+- queueING DONE ✔️
 - Setting page
 
 
@@ -44,3 +46,18 @@ Elo rating users to connect with events
 
 calitative score: embbed different qualities and produce a sigmoid output for likelyness 
 then compare score to create a Elo rating of match and get a top K f.e 10 match
+
+==> qualities: calendar, map and other fact with more and more data
+
+
+Tree friendship ==> chat, new people, research people ( quick add )
+
+
+Plan for marketing: 
+    - intnet tree
+
+
+Monetization:
+    - set uo dAccount
+    - SA data collection 
+    - intnet cible
