@@ -1,9 +1,16 @@
 
+import 'dart:typed_data';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:latlng/latlng.dart';
+import 'package:http_parser/http_parser.dart';
+
 import 'dart:io';
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:thematchapp/main.dart';
 
 class Account extends StatefulWidget{
   const Account({super.key, required this.user, required this.password, required this.ip});
@@ -27,6 +34,18 @@ class _Account extends State<Account> {
         .addPostFrameCallback((_) => loadEvents());
   }
 
+  Future removeEvent(eventID) async {
+    var interface = await NetworkInterface.list();
+    String ip2 = interface[0].addresses[0].address;
+    final response = await http
+      .post(Uri.parse('http://localhost:8000/unQueue'), headers: <String, String>{
+      'content-type': 'application/json',
+      'ip': ip2,
+      'id': eventID.toString()
+    });
+    print(response);
+  }
+
 
   Future loadEvents() async {
     var interface = await NetworkInterface.list();
@@ -46,15 +65,21 @@ class _Account extends State<Account> {
 
       final events = jsonDecode(response.body);
       print(events);
+      /**
+       * Column(children: [Text(), ElevatedButton(
+          onPressed: () => removeEvent(events["events"][i]["id"]),
+          child: const Text('Remove'),
+         )],)
+       */
 
       //update the state at refreash
       setState(() {
         if(events["events"].length > 0) {
           for(var i =0; i<events["events"].length; i++) {
-            _events.add(Column(children: [Text(events["events"][i]["name"]), ElevatedButton(
-          onPressed: () => {},
-          child: const Text('Remove'),
-         )],));
+              List latlng = events['events'][i]['coords'].split(", ");
+              LatLng coords = LatLng(double.tryParse(latlng[0]) ?? 00.00, double.tryParse(latlng[1]) ?? 00.00);
+              print(coords.latitude);
+              _events.add(Events(name: events["events"][i]["name"], ip: ip2, event: events["events"][i], connected: true, coords: coords, myItem: false));
           }
         } else {
           _events.add(const Text("No current events"));
@@ -63,6 +88,41 @@ class _Account extends State<Account> {
         
       });
   }
+  }
+
+  void uploadPP() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles();
+
+    if (result != null) {
+      File file = File(result.files.single.path!);
+      
+      Uint8List? fileBytes = result.files.first.bytes;
+      //String fileName = result.files.first.name;
+      var interface = await NetworkInterface.list();
+      String ip2 = interface[0].addresses[0].address;
+      /*
+      final response = await http
+      .post(Uri.parse('http://localhost:8000/profilePicture'), headers: <String, String>{
+      'content-type': 'application/json; charset=UTF-8',
+      'ip': ip2,
+      }, body: jsonEncode(<String, dynamic>{"file": file}),  );*/
+      
+      
+      var request = http.MultipartRequest("POST", Uri.parse('http://localhost:8000/profilePicture'));
+      request.fields['ip'] = ip2;
+      request.files.add(await http.MultipartFile.fromPath(
+          'file',
+          file.path,
+          contentType: MediaType('image', 'png'), //new MediaType('application', 'x-tar')
+      ));
+      print(request);
+      request.send().then((response) {
+        if (response.statusCode == 200) print("Uploaded!");
+      });
+
+    } else {
+      print("problem");
+    }
   }
 
 
@@ -76,22 +136,32 @@ class _Account extends State<Account> {
   }
   @override
   Widget build(BuildContext context) {
-      return Column(
+      return Column( children: [Padding(padding: const EdgeInsets.all(8.0), child:Container(width:300, height: 350, decoration: const BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(15.0)),
+              color: Color.fromARGB(137, 0, 140, 255),
+            ), child: Scaffold( 
+      backgroundColor: Colors.transparent,
+      body: Center( child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
+          ClipRRect(
+          borderRadius: BorderRadius.circular(8.0),
+          child: GestureDetector(
+          onTap: () => uploadPP(),
+           // Image tapped
+          child: Image.network("https://www.pngall.com/wp-content/uploads/5/Profile-PNG-Free-Download.png", width: 200, height: 200 ))) ,
           Text("user:${widget.user}"),
           Text("password:${widget.password}"),
           Text("ip:${widget.ip}"),
           ElevatedButton(onPressed: disconnect, child: const Text('Disconnect')),
-          Center(
+
+        ], ), )))
+      ), Center(
       
             child: Column(
       
               children: _events
             )
-          )
-
-        ]
-      );
+          )]);
   }
 }

@@ -30,13 +30,36 @@ DB:
 
 - account
 
-- My calendar DONE ✔️
-- post calendar DONE ✔️
-- post map DONE ✔️ ==> add pin points
-- My post DONE ✔️
-- map when scrolling
+- My calendar DONE ✔️ ==> add UI
+- form DONE ✔️: 
+    - working when creating a post DONE ✔️
+    - draw pointers to the screen DONE ✔️
+    - add a DONE button 
+    - specify what time of the day is the event (length)
+    - add ui
+- post EVENTS:
+    - subscriber counter in server.js
+    - subscription meter in EVENTS class
+    - filter post
+    - see where are post  DONE ✔️ ==> style
+    - access a map of all near posts
+    - map when scrolling
+    - add UI
+- My post DONE ✔️ ==> add UI
 - queueING DONE ✔️
 - Setting page
+- Profile page:
+    - profile picture
+    - add users infos 
+    - add preference for matching algo 
+    - add UI 
+- Friend page 
+- add notification when subscribing, deleting, removing, submit event
+- error notification 
+- manage deleted events DONE ✔️
+- remove DONE ✔️
+- delete DONE ✔️ ==> add a deleted event message to subscribe users
+
 
 
 
@@ -49,15 +72,22 @@ then compare score to create a Elo rating of match and get a top K f.e 10 match
 
 ==> qualities: calendar, map and other fact with more and more data
 
-
 Tree friendship ==> chat, new people, research people ( quick add )
 
+website: thematchapp.com
+
+style the app!
+
+Data: 
+    - all the user data is decentralized (p2p or ipfs ==> keep fees as low as possible)
+    - use p2p to deal with trees (connections with people/events)
+    - events can be p2p and centralized depending on the availability of the p2p network
 
 Plan for marketing: 
-    - intnet tree
-
+    - intnet tree (p2p connections between users, events and personnal preferences/filters)
 
 Monetization:
-    - set uo dAccount
+    - set uo dAccount ==> pseudo anonymous in tree network  DONE ✔️
+    - B2B with trees
     - SA data collection 
     - intnet cible

@@ -42,6 +42,8 @@ dependencies:
   map: ^1.4.2
   cached_network_image: ^3.3.0
   table_calendar: ^3.0.9
+  file_picker: ^6.1.1
+  http_parser: ^4.0.2
 
 dev_dependencies:
   flutter_test:

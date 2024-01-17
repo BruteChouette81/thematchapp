@@ -4,18 +4,22 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:latlong2/latlong.dart';
+//import 'package:latlong2/latlong.dart';
+//import 'package:latlong2/latlong.dart';
 import 'package:thematchapp/friends.dart';
+import 'package:thematchapp/minimap.dart';
 import 'package:thematchapp/myCalendar.dart';
+import 'package:latlng/latlng.dart';
 
 import './profilepage.dart';
 import './myposts.dart';
-import './rastermap.dart';
+//import './rastermap.dart';
+import './markers.dart';
 
 import 'package:http/http.dart' as http; //http package
 
 //import 'package:google_maps_flutter/google_maps_flutter.dart'; //google maps package
-import 'package:map/map.dart';
+//import 'package:map/map.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import 'dart:io';
@@ -58,18 +62,28 @@ class _NewEventForm extends State<NewEventForm> {
   bool mapDisplay = false;
 
   DateTime _selectedDay = DateTime.now(); 
-  
+
+  LatLng _pointedLocation = const LatLng(0.0, 0.0);
+
+  void tapScreen(LatLng position) {
+    //return the selected position
+    setState(() {
+      _pointedLocation = position;
+    });
+    
+  }
 
   Future<http.Response> createNewEvent() async {
     var interface = await NetworkInterface.list();
     String ip = interface[0].addresses[0].address;
+
     return http.post(Uri.parse('http://localhost:8000/newEvent'), headers: <String, String>{
       'content-type': 'application/json',
       'event_name': myController.text,
       'ip': ip,
-      'coords': "(0, 0)",
+      'coords': '${_pointedLocation.latitude.toString()}, ${_pointedLocation.longitude.toString()}',
       "date": '$_selectedDay'
-    } );
+    } ); 
   }
   
 
@@ -82,8 +96,12 @@ class _NewEventForm extends State<NewEventForm> {
 
   void _submitEvent() async {
     print("FORM: submited");
-    var response = await createNewEvent();
-    print(response);
+    if (myController.text != "") { 
+      var response = await createNewEvent();
+      print(response);
+    } else {
+      print("need name");
+    }
   }
 
   void _displayMap() {
@@ -114,7 +132,7 @@ class _NewEventForm extends State<NewEventForm> {
                  onPressed: _displayMap
             ),
       ),
-      body: const RasterMapPage() //add marker for events
+      body: MarkersPage(tapScreen: tapScreen) //add marker for events
   
       ) : Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -131,11 +149,17 @@ class _NewEventForm extends State<NewEventForm> {
         ), 
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+          child:  Text("Insert a location: ${_pointedLocation.latitude.toString()}, ${_pointedLocation.longitude.toString()}") ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
           child: Center(
             child: ElevatedButton(
             onPressed: _displayMap,
             child: const Text('Toggle Map'),
           )) ),
+          const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+          child:  Text("Add the day or the starting day of the event") ),
       Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
           child: Center(
@@ -148,7 +172,9 @@ class _NewEventForm extends State<NewEventForm> {
               _selectedDay = selectedDay;
             });
           },
-       )) ),   
+       )) ), Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+          child: Text('selected day: $_selectedDay')),   
        Center(child: ElevatedButton(
           onPressed: _submitEvent,
           child: const Text('Submit'),
@@ -272,7 +298,7 @@ class _NavDrawer extends State<NavDrawer> {
 }
 
 //map page
-
+/*
 class GMPage extends StatefulWidget {
   const GMPage({super.key});
 
@@ -318,7 +344,81 @@ late GoogleMapController mapController;
           mapController = controller;
         }
 */
+*/
+//event component
+class Events extends StatefulWidget {
+  const Events({super.key, required this.name, required this.ip, required this.event, required this.connected, required this.coords, required this.myItem});
+  /*
+  Column(children: [Text(eventName), ElevatedButton(
+          onPressed:  () => { if (connected) {
+            http
+      .post(Uri.parse('http://localhost:8000/queue'), headers: {
+      'content-type': 'application/json',
+      'ip': ip,
+      'id': events['eventInfos'][i]['id'].toString(),
+    }) 
+  } }, //
+          child: const Text('Subscribe'),
+         )],)*/
+  // config statefull widget
+  final bool myItem;
+  final LatLng coords;
+  final String name;
+  final String ip;
+  final dynamic event;
+  final bool connected;
 
+  @override
+  State<Events> createState() => _Events();
+}
+
+class _Events extends State<Events> {
+
+  @override
+  Widget build(BuildContext context) {
+    //build UI function
+    return widget.myItem ? Padding(padding: const EdgeInsets.all(8.0), child:Container(width:300, height: 200, decoration: const BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(15.0)),
+              color: Color.fromARGB(137, 0, 140, 255),
+            ), child: Scaffold( 
+      backgroundColor: Colors.transparent,
+      body: Center(child:Column(
+      
+      children: [Text(widget.name), MinimapPage(coords: widget.coords) ,Padding(padding: const EdgeInsets.all(7.0), child: ElevatedButton(
+          onPressed:  () => { if (widget.connected) {
+            http
+      .post(Uri.parse('http://localhost:8000/queue'), headers: {
+      'content-type': 'application/json',
+      'ip': widget.ip,
+      'id': widget.event['id'].toString(),
+    }) 
+  } else {
+    print("not connected")
+  } },
+          child: const Text('Subscribe'),
+         ), )],),) ) ) ,) :  Padding(padding: const EdgeInsets.all(8.0), child:Container(width:300, height: 200, decoration: const BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(15.0)),
+              color: Color.fromARGB(137, 0, 140, 255),
+            ), child: Scaffold( 
+      backgroundColor: Colors.transparent,
+      body: Center(child:Column(
+      
+      children: [Text(widget.name), MinimapPage(coords: widget.coords) ,Padding(padding: const EdgeInsets.all(7.0), child: ElevatedButton(
+          onPressed:  () => { if (widget.connected) {
+            http
+      .post(Uri.parse('http://localhost:8000/unQueue'), headers: {
+      'content-type': 'application/json',
+      'ip': widget.ip,
+      'id': widget.event['id'].toString(),
+    }) 
+  } else {
+    print("not connected")
+  } },
+          child: const Text('Remove'),
+         ), )],),) ) ) ,);
+  }
+
+}
 //Home page
 
 class _HomePageState extends State<TMA> {
@@ -328,6 +428,11 @@ class _HomePageState extends State<TMA> {
   String iip = "";
   final _listOfEvents = <String>[];
   final _homeWidgets = <Widget>[];
+
+  //event research settings/filter
+  final List<String> list = <String>['Most recent', 'Location(near me)', 'My dispos', 'Recommended'];
+  String dropdownValue = "Most recent";
+
 
   Future loadEvents() async {
     var interface = await NetworkInterface.list();
@@ -349,29 +454,27 @@ class _HomePageState extends State<TMA> {
       //update the state at refreash
       setState(() {
         _homeWidgets.clear();
-        if (events["events"].length > 0) {
-          for (int i=0; i<events["events"].length; i++) {
-            String eventName = events["events"][i];
-            _homeWidgets.add(Column(children: [Text(eventName), ElevatedButton(
-          onPressed:  () => { 
-            http
-      .post(Uri.parse('http://localhost:8000/queue'), headers: {
-      'content-type': 'application/json',
-      'ip': ip,
-      'id': events['eventInfos'][i]['id'].toString(),
-    })}, //
-          child: const Text('Subscribe'),
-         )],));
-          }
-        } else {
-          _homeWidgets.add(const Text("No current Events..."));
-        }
-
         for (int i = 0; i<events["connected"].length; i++) {
           if(ip == events["connected"][i]) {
             connected = true;
           }
         }
+
+        if (events["events"].length > 0) {
+
+          for (int i=0; i<events["events"].length; i++) {
+            String eventName = events["events"][i];
+            //get the coords
+            List latlng = events['eventInfos'][i]['coords'].split(", ");
+            LatLng coords = LatLng(double.tryParse(latlng[0]) ?? 00.00, double.tryParse(latlng[1]) ?? 00.00);
+            print(coords.latitude);
+            _homeWidgets.add(Events(name: eventName, ip: ip, event: events['eventInfos'][i], connected: connected, coords:  coords, myItem: true,));
+          }
+        } else {
+          _homeWidgets.add(const Text("No current Events..."));
+        }
+
+        
         
       });
         
@@ -447,17 +550,32 @@ class _HomePageState extends State<TMA> {
         title: Text(widget.title),
       ),
       body: _formActive ? const NewEventForm() : Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
+       
+        child: Column(children: [const Text("Research filters"), DropdownButton<String>(
+      value: dropdownValue,
+      icon: const Icon(Icons.arrow_downward),
+      elevation: 16,
+      style: const TextStyle(color: Colors.blue),
+      underline: Container(
+        height: 2,
+        color: Colors.blue,
+      ),
+      onChanged: (String? value) {
+        // This is called when the user selects an item.
+        setState(() {
+          dropdownValue = value!;
+        });
+      },
+      items: list.map<DropdownMenuItem<String>>((String value) {
+        return DropdownMenuItem<String>(
+          value: value,
+          child: Text(value),
+        );
+      }).toList(),
+    ), Column(
           
-          //press p to see canvas
-          //mainAxisAlignment: MainAxisAlignment.center, align center
           children: _homeWidgets
-        ),
+        )]),
       ),
       floatingActionButton: connected ? !_formActive ? FloatingActionButton(
         onPressed: _activateForm,

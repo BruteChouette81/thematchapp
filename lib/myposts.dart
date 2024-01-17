@@ -24,6 +24,15 @@ class _MyPosts extends State<MyPosts> {
     WidgetsBinding.instance
         .addPostFrameCallback((_) => loadInfo());
   }
+
+  Future deleteItem(String name) async {
+    final response = await http
+      .post(Uri.parse('http://localhost:8000/deleteEvent'), headers: <String, String>{
+      'content-type': 'application/json',
+      'event_name': name
+    });
+  }
+
   Future loadInfo() async {
     var interface = await NetworkInterface.list();
     String ip2 = interface[0].addresses[0].address;
@@ -48,7 +57,7 @@ class _MyPosts extends State<MyPosts> {
         if(infos["mp"].length > 0) {
           for(var i =0; i<infos["mp"].length; i++) {
             _Posted.add(Column(children: [Text(infos["mp"][i]["name"]), ElevatedButton(
-          onPressed: () => {},
+          onPressed: () => deleteItem(infos["mp"][i]["name"]),
           child: const Text('Delete'),
          )],));
           }

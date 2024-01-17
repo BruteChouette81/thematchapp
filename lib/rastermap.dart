@@ -10,7 +10,9 @@ import 'package:latlng/latlng.dart';
 import 'package:map/map.dart';
 
 class RasterMapPage extends StatefulWidget {
-  const RasterMapPage({Key? key}) : super(key: key);
+  const RasterMapPage({super.key, required this.tapScreen});
+
+  final void Function(Offset) tapScreen;
 
   @override
   RasterMapPageState createState() => RasterMapPageState();
@@ -24,6 +26,16 @@ class RasterMapPageState extends State<RasterMapPage> {
 
   bool _darkMode = false;
 
+  Offset _pointedLocation = const Offset(0.0, 0.0);
+  void _tapScreenRaster (Offset location) {
+    widget.tapScreen(location);
+    setState(() {
+      _pointedLocation = location;
+    });
+    
+
+
+  }
   void _gotoDefault() {
     controller.center = const LatLng(45.54, -73.55);
     controller.zoom = 14;
@@ -37,6 +49,8 @@ class RasterMapPageState extends State<RasterMapPage> {
     transformer.setZoomInPlace(zoom, position);
     setState(() {});
   }
+
+  
 
   Offset? _dragStart;
   double _scaleStart = 1.0;
@@ -101,6 +115,7 @@ class RasterMapPageState extends State<RasterMapPage> {
         builder: (context, transformer) {
           return GestureDetector(
             behavior: HitTestBehavior.opaque,
+            onTapDown: (details) => _tapScreenRaster(details.localPosition),
             onDoubleTapDown: (details) => _onDoubleTap(
               transformer,
               details.localPosition,
@@ -146,6 +161,7 @@ class RasterMapPageState extends State<RasterMapPage> {
                       transformer.getViewport(),
                     ),
                   ),
+                  Text("coords selected: ${_pointedLocation.toString()}")
                 ],
               ),
             ),

@@ -27,6 +27,7 @@ class _ConnectForm extends State<ConnectForm> {
   bool error1 = false;
   bool error2 = false;
   bool error3 = false;
+  bool error4 = false;
   bool success = false;
 
   Future<http.Response> connectUsingAPI() {
@@ -122,21 +123,31 @@ class _ConnectForm extends State<ConnectForm> {
     var interface = await NetworkInterface.list();
     ip = interface[0].addresses[0].address;
     print("FORM: Signing Up");
-    final response = await signUpUsingAPI();
-    print(response.body);
-    final res = jsonDecode(response.body);
+    if (myController.text.contains("@")){
+      final response = await signUpUsingAPI();
+      print(response.body);
+      final res = jsonDecode(response.body);
 
-    print(res["status"]);
-    if (res["status"] == "1") {
+      print(res["status"]);
+      if (res["status"] == "1") {
+        setState(() {
+        error1 = true;
+      });
+      } else if (res["status"] == "ok") {
+        setState(() {
+        success = true;
+        ip = interface[0].addresses[0].address;
+      });
+      }
+    }
+    else {
       setState(() {
-      error1 = true;
-    });
-    } else if (res["status"] == "ok") {
-      setState(() {
-      success = true;
-      ip = interface[0].addresses[0].address;
-    });
-  }
+              error4 = true;
+
+      });
+    }
+    
+  
   }
 
   //useEffect()
@@ -156,7 +167,7 @@ class _ConnectForm extends State<ConnectForm> {
           child: TextField(
             decoration: const InputDecoration(
               border: OutlineInputBorder(),
-              hintText: 'Username',
+              hintText: 'Email',
             ),
             controller: myController,
           ),
@@ -187,7 +198,7 @@ class _ConnectForm extends State<ConnectForm> {
          )) ,
          error1 ? AlertDialog(
               title: const Text('Error: already existing user'),
-              content: const Text('If you laready have an account, login in!'),
+              content: const Text('If you already have an account, login in!'),
               actions: <Widget>[
                 TextButton(
                   onPressed: () => setState(() {
@@ -216,6 +227,18 @@ class _ConnectForm extends State<ConnectForm> {
                 TextButton(
                   onPressed: () => setState(() {
                     error3 = false;
+                  }),
+                  child: const Text('OK'),
+                ),
+              ],
+            ) :  const Text(""),
+          error4 ? AlertDialog(
+              title: const Text('Error: invalid Email'),
+              content: const Text('You need to enter a valid email to sign up.'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () => setState(() {
+                    error4 = false;
                   }),
                   child: const Text('OK'),
                 ),
