@@ -170,7 +170,7 @@ app.post('/signup', (req, res) => {
         userlist.push(req.headers.user_name);
         //passlist.push(req.headers.password);
         //connectedUser.push(req.headers.ip)
-        connectedUser.push({"ip": req.headers.ip, "name": req.headers.user_name, "password": req.headers.password, "connected": true, "events": [], "dispo": []})
+        connectedUser.push({"ip": req.headers.ip, "name": req.headers.user_name, "password": req.headers.password, "accountInfos": {}, "filters": {}, "connected": true, "events": [], "dispo": []})
         console.log("INFO: new user added")
         console.log(connectedUser)
         res.json({"status": "ok"})
@@ -180,6 +180,25 @@ app.post('/signup', (req, res) => {
     }
     //save username + password
     
+})
+
+app.post('/accountInfos', (req, res) => {
+    //displayed in account and in friend tab 
+    //name and bio/images(gallery) ==> to back up on ipfs
+    for (let i =0; i<connectedUser.length; i++) {
+        if (connectedUser[i].ip == req.headers.ip) {
+            let cu = connectedUser[i]
+            cu.accountInfos = {"name": req.headers.name, "bio":req.headers.bio}
+            res.send("ok")
+        }
+    }
+
+})
+
+app.post('/filters', (req, res) => {
+    //filters are elements of a connected users, they are displayed in account.dart and used in the main page to generate a list of event
+    //filters: age, gender, ==> to back up on ipfs
+    res.send("ok")
 })
 
 //connect if not already connected

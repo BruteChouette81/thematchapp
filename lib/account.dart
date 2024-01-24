@@ -24,9 +24,88 @@ class Account extends StatefulWidget{
 
 }
 
+class AccountSettings extends StatefulWidget {
+  const AccountSettings({super.key});
+
+  @override
+  State<AccountSettings> createState() => _AccountSetting();
+}
+
+class _AccountSetting extends State<AccountSettings> {
+
+  final nameController = TextEditingController();
+  final bioController = TextEditingController();
+
+   Future<http.Response> newAccountInfos() async {
+    var interface = await NetworkInterface.list();
+    String ip = interface[0].addresses[0].address;
+
+    return http.post(Uri.parse('http://localhost:8000/accountInfos'), headers: <String, String>{
+      'content-type': 'application/json',
+      'name': nameController.text,
+      'ip': ip,
+      'bio': bioController.text
+    } ); 
+  }
+  
+
+  @override
+  void dispose() {
+    // Clean up the controller when the widget is disposed.
+    nameController.dispose();
+    bioController.dispose();
+    super.dispose();
+  }
+
+  void _submitEvent() async {
+    print("FORM: submited");
+    if (nameController.text != "") { 
+      var response = await newAccountInfos();
+      print(response);
+    } else {
+      print("need name");
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return  Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+         Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+          child: TextField(
+            decoration: const InputDecoration(
+              border: OutlineInputBorder(),
+              hintText: 'Your name',
+            ),
+            controller: nameController,
+          ),
+        ), 
+         Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+          child: TextField(
+            decoration: const InputDecoration(
+              border: OutlineInputBorder(),
+              hintText: 'Your bio',
+            ),
+            controller: bioController,
+          ),
+        ), 
+         Center(child: ElevatedButton(
+          onPressed: _submitEvent,
+          child: const Text('Submit'),
+         ))
+      ]
+    );
+  }
+}
+
 class _Account extends State<Account> {
 
   final _events = <Widget>[];
+
+  bool displaySetting = false;
 
   void initState() {
     super.initState();
@@ -134,9 +213,26 @@ class _Account extends State<Account> {
     });
     print(response);
   }
+
+  void activateSetting() {
+    displaySetting = !displaySetting;
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
-      return Column( children: [Padding(padding: const EdgeInsets.all(8.0), child:Container(width:300, height: 350, decoration: const BoxDecoration(
+      return displaySetting ? Scaffold( appBar: AppBar(
+        //navigation
+        
+        backgroundColor: Colors.green[300],
+        title: const Text("Account information"),
+        leading: IconButton (
+                 icon: const Icon(Icons.arrow_back), 
+                 onPressed: activateSetting
+            ),
+      ),
+      body: const AccountSettings())
+       : Column( children: [Padding(padding: const EdgeInsets.all(8.0), child:Container(width:300, height: 350, decoration: const BoxDecoration(
               borderRadius: BorderRadius.all(Radius.circular(15.0)),
               color: Color.fromARGB(137, 0, 140, 255),
             ), child: Scaffold( 
@@ -153,6 +249,7 @@ class _Account extends State<Account> {
           Text("user:${widget.user}"),
           Text("password:${widget.password}"),
           Text("ip:${widget.ip}"),
+          ElevatedButton(onPressed: activateSetting, child: const Text('Settings')),
           ElevatedButton(onPressed: disconnect, child: const Text('Disconnect')),
 
         ], ), )))

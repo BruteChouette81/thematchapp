@@ -49,8 +49,8 @@ DB:
 - queueING DONE ✔️
 - Setting page
 - Profile page:
-    - profile picture
-    - add users infos 
+    - profile picture DONE ✔️
+    - add users infos ==> add form to input and view
     - add preference for matching algo 
     - add UI 
 - Friend page 
