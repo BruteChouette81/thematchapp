@@ -24,6 +24,9 @@ class _ConnectForm extends State<ConnectForm> {
 
   String ip = "";
 
+  String name = "";
+  String bio = "";
+
   bool error1 = false;
   bool error2 = false;
   bool error3 = false;
@@ -71,6 +74,8 @@ class _ConnectForm extends State<ConnectForm> {
       setState(() {
         if(!(infos["status"] == 5)) {
           ip = ip2;
+          name = infos["accountInfos"]["name"];
+          bio = infos["accountInfos"]["bio"];
           myController.text = infos["name"];
           myPassController.text = infos["password"];
           success = infos["connected"];
@@ -159,7 +164,7 @@ class _ConnectForm extends State<ConnectForm> {
 
   @override
   Widget build(BuildContext context) {
-    return success ? Account(user: myController.text, password: myPassController.text, ip: ip) : Column(
+    return success ? Account(user: myController.text, password: myPassController.text, ip: ip, name:name, bio: bio,) : Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
          Padding(

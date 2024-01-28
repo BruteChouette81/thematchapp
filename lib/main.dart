@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 //import 'package:latlong2/latlong.dart';
 //import 'package:latlong2/latlong.dart';
 import 'package:thematchapp/friends.dart';
+import 'package:thematchapp/settings.dart';
 import 'package:thematchapp/minimap.dart';
 import 'package:thematchapp/myCalendar.dart';
 import 'package:latlng/latlng.dart';
@@ -252,11 +253,16 @@ class _NavDrawer extends State<NavDrawer> {
             },
           ),
           
-          ListTile(
+          widget.connected ? ListTile(
             leading: const Icon(Icons.settings),
             title: const Text('Settings'),
-            onTap: () => {Navigator.of(context).pop()},
-          ),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const Settings()),
+              );
+            },
+          ): const Text(""),
           widget.connected ? ListTile(
             leading: const Icon(Icons.people),
             title: const Text('Friends'),

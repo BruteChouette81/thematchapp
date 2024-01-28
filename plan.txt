@@ -24,6 +24,7 @@ DB:
 - users infos DONE ✔️
 - events DB DONE ✔️
 - calendar DB DONE ✔️
+- embedding of filters ==> use vectra for multi-modal vector database ==> p2p computing
 - match making 
 
 ---------------------------------
@@ -43,15 +44,15 @@ DB:
     - filter post
     - see where are post  DONE ✔️ ==> style
     - access a map of all near posts
-    - map when scrolling
+    - map when scrolling ==> waze partnership
     - add UI
 - My post DONE ✔️ ==> add UI
 - queueING DONE ✔️
-- Setting page
+- Setting page DONE ✔️
 - Profile page:
     - profile picture DONE ✔️
-    - add users infos ==> add form to input and view
-    - add preference for matching algo 
+    - add users infos ==> add form to input and view ==> display infos DONE ✔️ 
+    - add preference for matching algo ==> filters
     - add UI 
 - Friend page 
 - add notification when subscribing, deleting, removing, submit event
@@ -72,6 +73,9 @@ then compare score to create a Elo rating of match and get a top K f.e 10 match
 
 ==> qualities: calendar, map and other fact with more and more data
 
+
+Match filters (profile) for recommendation algo and normal filters (main.dart) that are additionnable for view page 
+
 Tree friendship ==> chat, new people, research people ( quick add )
 
 website: thematchapp.com
@@ -91,3 +95,6 @@ Monetization:
     - B2B with trees
     - SA data collection 
     - intnet cible
+    - waze partnership
+
+deploy server to AWS ec2 and deploy app to app store

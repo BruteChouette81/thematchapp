@@ -8,9 +8,12 @@ let path = require('path');
 const fs = require('fs');
 const pinataSDK = require('@pinata/sdk');
 
+//embeddings
+//const tf = require('@tensorflow/tfjs-node');
+
 //const FormData = require('form-data');
 
-const axios = require("axios");
+//const axios = require("axios");
 const key = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiJmNjhjNmRmZi1mOGRmLTQzNzUtYjA5Ny1mMTNmNDk0OTk3ODIiLCJlbWFpbCI6ImhiYXJpbDFAaWNsb3VkLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJwaW5fcG9saWN5Ijp7InJlZ2lvbnMiOlt7ImlkIjoiRlJBMSIsImRlc2lyZWRSZXBsaWNhdGlvbkNvdW50IjoxfSx7ImlkIjoiTllDMSIsImRlc2lyZWRSZXBsaWNhdGlvbkNvdW50IjoxfV0sInZlcnNpb24iOjF9LCJtZmFfZW5hYmxlZCI6ZmFsc2UsInN0YXR1cyI6IkFDVElWRSJ9LCJhdXRoZW50aWNhdGlvblR5cGUiOiJzY29wZWRLZXkiLCJzY29wZWRLZXlLZXkiOiI2ODFmYTNmZThmY2JmZTI5OTJmZSIsInNjb3BlZEtleVNlY3JldCI6IjcxOGRhMWFjMTRkZmNmMjVjMzM2YmZlYTI0MWUzODU2M2U1ZjJjOWNjOGJkNzdiY2RlMWE1OTY4YWQ4ZWJmNmEiLCJpYXQiOjE2ODUyODk0NDZ9.dheuwiicVcI3mM7yMo9voga4Bis7nDu7g5TJocC_xkc"
 const pinata = new pinataSDK({ pinataApiKey: "b82caedb6d5641a18b9f", pinataSecretApiKey: "0498ecb8ad008239bfbeb85b90b3a1b93eaecf7ccfc2e1bfc98c6df9a5836d2f"});
 const app = express();
@@ -42,7 +45,14 @@ let userlist = [];
 let connectedUser = [
 ]
 
-//in the user db, there is a dict of created and 
+//embedding model(custom vector database)
+// load model from training in python and use it to predict/ only use the word embedding (see link)
+//https://www.tensorflow.org/text/guide/word_embeddings
+/*
+const loadModel = async() => { //also good for embeddings
+    const model = await tf.loadLayersModel('file://path/to/my-model/model.json');
+    model.predict(tf.tensor())
+}*/
 
 app.listen(8000, () => {  console.log('Server.js on localhost:8000');});
 
