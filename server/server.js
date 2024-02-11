@@ -1,12 +1,20 @@
 const express        = require('express');
+const { LocalIndex } = require('vectra');
+const OpenAI  = require('openai');
+let path = require('path');
+//import OpenAI from "openai";
+
+const index = new LocalIndex(path.join(__dirname, '..', 'index'));
+//const vectra = require("vectra")
 //const MongoClient    = require('mongodb').MongoClient;
 const bodyParser     = require('body-parser');
 //const e = require('express');
 let formidable = require('express-formidable');
-let path = require('path');
+
 
 const fs = require('fs');
 const pinataSDK = require('@pinata/sdk');
+const { normalizePath } = require('@pinata/sdk');
 
 //embeddings
 //const tf = require('@tensorflow/tfjs-node');
@@ -53,8 +61,57 @@ const loadModel = async() => { //also good for embeddings
     const model = await tf.loadLayersModel('file://path/to/my-model/model.json');
     model.predict(tf.tensor())
 }*/
+//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
 
-app.listen(8000, () => {  console.log('Server.js on localhost:8000');});
+async function boot() {
+    if (!await index.isIndexCreated()) {
+        await index.createIndex();
+    }
+}
+
+
+const api = new OpenAI({apiKey: `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`});
+
+
+/* Add items
+await addItem('apple');
+await addItem('oranges');
+await addItem('red');
+await addItem('blue');
+*/
+app.listen(8000, () => {  
+    console.log('Server.js on localhost:8000');
+    boot();
+});
+
+//vector db helper functions
+async function getVector(text) {
+    const response = await api.embeddings.create({
+        model: "text-embedding-ada-002",
+        input: text,
+      });
+    return response.data.data[0].embedding;
+}
+
+async function addItem(text) { //add item to db
+    await index.insertItem({
+        vector: await getVector(text),
+        metadata: { text }
+    });
+}
+
+
+async function queryVectordb(text) { //query with client
+    const vector = await getVector(text);
+    const results = await index.queryItems(vector, 3); //3 best scores
+    if (results.length > 0) {
+        for (const result of results) {
+            console.log(`[${result.score}] ${result.item.metadata.text}`);
+        }
+    } else {
+        console.log(`No results found.`);
+    }
+}
 
 app.get('/test', (req, res) => {
     res.send("Connected to server");
@@ -208,7 +265,17 @@ app.post('/accountInfos', (req, res) => {
 app.post('/filters', (req, res) => {
     //filters are elements of a connected users, they are displayed in account.dart and used in the main page to generate a list of event
     //filters: age, gender, ==> to back up on ipfs
-    res.send("ok")
+
+    for (let i =0; i<connectedUser.length; i++) {
+        if (connectedUser[i].ip == req.headers.ip) {
+            let cu = connectedUser[i]
+            cu.filters = {"sex": req.headers.sex, "age":req.headers.age, "interests": req.headers.interests}
+            //addItem(cu.filters.toString()); add item to vector db
+            res.send("ok")
+        }
+    }
+
+    //res.send("ok")
 })
 
 //connect if not already connected

@@ -27,6 +27,11 @@ class _ConnectForm extends State<ConnectForm> {
   String name = "";
   String bio = "";
 
+  String sex = "";
+  int age = 0;
+  List<String> interestList = [];
+
+
   bool error1 = false;
   bool error2 = false;
   bool error3 = false;
@@ -74,8 +79,34 @@ class _ConnectForm extends State<ConnectForm> {
       setState(() {
         if(!(infos["status"] == 5)) {
           ip = ip2;
-          name = infos["accountInfos"]["name"];
-          bio = infos["accountInfos"]["bio"];
+          if (infos["accountInfos"]["name"] != null) {
+            name = infos["accountInfos"]["name"];
+          } else {
+            name = "no name";
+          }
+
+          if (infos["accountInfos"]["bio"] != null) {
+             bio = infos["accountInfos"]["bio"];
+          } else {
+             bio = "no bio";
+          }
+          if (infos["filters"]["sex"] != null) {
+            sex = infos["filters"]["sex"];
+          } else {
+            sex = "male";
+          }
+          if (infos["filters"]["age"] != null) {
+            age = int.parse(infos["filters"]["age"]);
+          } else {
+            age = 0;
+          }
+          if (infos["filters"]["interests"] != null) {
+
+            interestList = infos["filters"]["interests"].replaceAll("[", "").replaceAll("]", "").split(", "); //json.decode(infos["filters"]["interests"]).cast<String>().toList();
+          } else {
+            interestList = [];
+          }
+
           myController.text = infos["name"];
           myPassController.text = infos["password"];
           success = infos["connected"];
@@ -164,7 +195,7 @@ class _ConnectForm extends State<ConnectForm> {
 
   @override
   Widget build(BuildContext context) {
-    return success ? Account(user: myController.text, password: myPassController.text, ip: ip, name:name, bio: bio,) : Column(
+    return success ? Account(user: myController.text, password: myPassController.text, ip: ip, name:name, bio: bio, sex: sex, age: age, interests: interestList,) : Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
          Padding(

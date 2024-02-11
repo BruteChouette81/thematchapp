@@ -66,6 +66,10 @@ DB:
 
 Match making algo:
 
+format: 
+User input: age-sex-[interests embeddings], event input: age(founder)-sex(founder)-[embedding of the event sport]
+compare embeddings and lowest score difference = high ranked
+
 Elo rating users to connect with events 
 
 calitative score: embbed different qualities and produce a sigmoid output for likelyness 

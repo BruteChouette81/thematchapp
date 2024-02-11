@@ -14,13 +14,16 @@ import 'package:http/http.dart' as http;
 import 'package:thematchapp/main.dart';
 
 class Account extends StatefulWidget{
-  const Account({super.key, required this.user, required this.password, required this.ip, required this.name, required this.bio});
+  const Account({super.key, required this.user, required this.password, required this.ip, required this.name, required this.bio, required this.sex, required this.age, required this.interests});
   
   final String user;
   final String password;
   final String ip;
   final String name;
   final String bio;
+  final String sex;
+  final int age;
+  final List<String> interests;
 
   @override
   State<Account> createState() => _Account();
@@ -28,7 +31,11 @@ class Account extends StatefulWidget{
 }
 
 class AccountSettings extends StatefulWidget {
-  const AccountSettings({super.key});
+  const AccountSettings({super.key, required this.name, required this.bio});
+
+  final String name;
+  final String bio;
+ 
 
   @override
   State<AccountSettings> createState() => _AccountSetting();
@@ -50,7 +57,18 @@ class _AccountSetting extends State<AccountSettings> {
       'bio': bioController.text
     } ); 
   }
-  
+
+  void loadController() {
+    nameController.text = widget.name;
+    bioController.text = widget.bio;
+  }
+
+
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) => loadController());
+  }
 
   @override
   void dispose() {
@@ -171,6 +189,24 @@ class _Account extends State<Account> {
     var interface = await NetworkInterface.list();
     String ip2 = interface[0].addresses[0].address;
 
+    sex = widget.sex;
+    ageController.text = widget.age.toString();
+    print(widget.interests.length);
+    for (int i=0; i<widget.interests.length; i++) {
+       interests.add(
+      Container(width:150, height: 50, decoration: const BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(15.0)),
+              color: Color.fromARGB(137, 0, 140, 255),
+
+            ), child: Row(children: [Text(widget.interests[i]), IconButton(
+                icon: const Icon(Icons.remove_circle),
+                onPressed: removeInterest,
+                ),],)
+      )
+    );
+    }
+    setState(() {});
+
     final response = await http
       .post(Uri.parse('http://localhost:8000/queueList'), headers: <String, String>{
       'content-type': 'application/json',
@@ -255,6 +291,20 @@ class _Account extends State<Account> {
     print(response);
   }
 
+  Future _submitFilters() async {
+    final response = await http
+      .post(Uri.parse('http://localhost:8000/filters'), headers: <String, String>{
+      'content-type': 'application/json',
+      'ip': widget.ip,
+      'sex': sex,
+      'age': ageController.text,
+      'interests': interestsString.toString()
+
+    });
+    print(response);
+
+  }
+
   void activateSetting() {
     displaySetting = !displaySetting;
     setState(() {});
@@ -272,7 +322,7 @@ class _Account extends State<Account> {
                  onPressed: activateSetting
             ),
       ),
-      body: const AccountSettings())
+      body: AccountSettings(name:widget.name, bio:widget.bio))
        : SingleChildScrollView( child: Column( children: [Padding(padding: const EdgeInsets.all(8.0), child:Container(width:300, height: 350, decoration: const BoxDecoration(
               borderRadius: BorderRadius.all(Radius.circular(15.0)),
               color: Color.fromARGB(137, 0, 140, 255),
@@ -293,7 +343,7 @@ class _Account extends State<Account> {
           Padding(padding: const EdgeInsets.all(4.0), child: ElevatedButton(onPressed: disconnect, child: const Text('Disconnect')), ),
 
         ], ), )))
-      ),Column( children: [Padding(padding: const EdgeInsets.all(8.0), child:Container(width:300, height: 350, decoration: const BoxDecoration(
+      ),Column( children: [Padding(padding: const EdgeInsets.all(8.0), child:Container(width:300, height: 450, decoration: const BoxDecoration(
               borderRadius: BorderRadius.all(Radius.circular(15.0)),
               color: Color.fromARGB(137, 0, 140, 255),
             ), child:Padding(padding: const EdgeInsets.all(8.0), child:Center(child:Column(children: <Widget>
@@ -342,7 +392,15 @@ class _Account extends State<Account> {
                 ),
                 controller: intController,
               ),
-              Column(children: interests,)
+              Column(children: interests,),
+              Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+              child: Center(
+              child: ElevatedButton(
+              onPressed: _submitFilters,
+              child: const Text('Update filters'),
+            
+            ))),
             ],
             )))))]) ,Center(
       
