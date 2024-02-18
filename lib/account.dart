@@ -1,9 +1,10 @@
 
-import 'dart:typed_data';
+//import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+// ignore: depend_on_referenced_packages
 import 'package:latlng/latlng.dart';
 import 'package:http_parser/http_parser.dart';
 
@@ -63,7 +64,7 @@ class _AccountSetting extends State<AccountSettings> {
     bioController.text = widget.bio;
   }
 
-
+  @override
   void initState() {
     super.initState();
     WidgetsBinding.instance
@@ -79,12 +80,13 @@ class _AccountSetting extends State<AccountSettings> {
   }
 
   void _submitEvent() async {
-    print("FORM: submited");
+    //print("FORM: submited");
     if (nameController.text != "") { 
-      var response = await newAccountInfos();
-      print(response);
+      //var response = await newAccountInfos();
+      await newAccountInfos();
+      //print(response);
     } else {
-      print("need name");
+      //print("need name");
     }
   }
 
@@ -135,6 +137,7 @@ class _Account extends State<Account> {
 
   bool displaySetting = false;
 
+  @override
   void initState() {
     super.initState();
     WidgetsBinding.instance
@@ -149,7 +152,7 @@ class _Account extends State<Account> {
   }
 
   void removeInterest() {
-    print("removed");
+    //print("removed");
   }
 
   void addInterest() {
@@ -175,13 +178,13 @@ class _Account extends State<Account> {
   Future removeEvent(eventID) async {
     var interface = await NetworkInterface.list();
     String ip2 = interface[0].addresses[0].address;
-    final response = await http
-      .post(Uri.parse('http://localhost:8000/unQueue'), headers: <String, String>{
+    await http 
+      .post(Uri.parse('http://localhost:8000/unQueue'), headers: <String, String>{ //final response = 
       'content-type': 'application/json',
       'ip': ip2,
       'id': eventID.toString()
     });
-    print(response);
+    //print(response);
   }
 
 
@@ -191,7 +194,7 @@ class _Account extends State<Account> {
 
     sex = widget.sex;
     ageController.text = widget.age.toString();
-    print(widget.interests.length);
+    //print(widget.interests.length);
     for (int i=0; i<widget.interests.length; i++) {
        interests.add(
       Container(width:150, height: 50, decoration: const BoxDecoration(
@@ -217,10 +220,10 @@ class _Account extends State<Account> {
       // If the server did return a 200 OK response,
       // then parse the JSON.
       //print(response);
-      print(response.body);
+      //print(response.body);
 
       final events = jsonDecode(response.body);
-      print(events);
+      //print(events);
       /**
        * Column(children: [Text(), ElevatedButton(
           onPressed: () => removeEvent(events["events"][i]["id"]),
@@ -234,7 +237,7 @@ class _Account extends State<Account> {
           for(var i =0; i<events["events"].length; i++) {
               List latlng = events['events'][i]['coords'].split(", ");
               LatLng coords = LatLng(double.tryParse(latlng[0]) ?? 00.00, double.tryParse(latlng[1]) ?? 00.00);
-              print(coords.latitude);
+              //print(coords.latitude);
               _events.add(Events(name: events["events"][i]["name"], ip: ip2, event: events["events"][i], connected: true, coords: coords, myItem: false));
           }
         } else {
@@ -252,7 +255,7 @@ class _Account extends State<Account> {
     if (result != null) {
       File file = File(result.files.single.path!);
       
-      Uint8List? fileBytes = result.files.first.bytes;
+      //Uint8List? fileBytes = result.files.first.bytes;
       //String fileName = result.files.first.name;
       var interface = await NetworkInterface.list();
       String ip2 = interface[0].addresses[0].address;
@@ -271,29 +274,29 @@ class _Account extends State<Account> {
           file.path,
           contentType: MediaType('image', 'png'), //new MediaType('application', 'x-tar')
       ));
-      print(request);
+      //print(request);
       request.send().then((response) {
-        if (response.statusCode == 200) print("Uploaded!");
+        if (response.statusCode == 200) {}
       });
 
     } else {
-      print("problem");
+      //print("problem");
     }
   }
 
 
   Future disconnect() async {
-     final response = await http
-      .post(Uri.parse('http://localhost:8000/disconnect'), headers: <String, String>{
+    await http
+      .post(Uri.parse('http://localhost:8000/disconnect'), headers: <String, String>{ //final response = 
       'content-type': 'application/json',
       'ip': widget.ip
     });
-    print(response);
+    //print(response);
   }
 
   Future _submitFilters() async {
-    final response = await http
-      .post(Uri.parse('http://localhost:8000/filters'), headers: <String, String>{
+   await http 
+      .post(Uri.parse('http://localhost:8000/filters'), headers: <String, String>{ // final response = 
       'content-type': 'application/json',
       'ip': widget.ip,
       'sex': sex,
@@ -301,7 +304,7 @@ class _Account extends State<Account> {
       'interests': interestsString.toString()
 
     });
-    print(response);
+    //print(response);
 
   }
 

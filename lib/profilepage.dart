@@ -70,10 +70,10 @@ class _ConnectForm extends State<ConnectForm> {
       // If the server did return a 200 OK response,
       // then parse the JSON.
       //print(response);
-      print(response.body);
+      //print(response.body);
 
       final infos = jsonDecode(response.body);
-      print(infos);
+      //print(infos);
 
       //update the state at refreash
       setState(() {
@@ -129,14 +129,14 @@ class _ConnectForm extends State<ConnectForm> {
   void _submitEvent() async {
     var interface = await NetworkInterface.list();
     ip = interface[0].addresses[0].address;
-    print("FORM: Connecting");
+    //print("FORM: Connecting");
     final response = await connectUsingAPI();
 
-    print(response.body);
+    //print(response.body);
 
     final res = jsonDecode(response.body);
 
-    print(res["status"]);
+    //print(res["status"]);
 
     if (res["status"] == "2") {
       setState(() {
@@ -158,13 +158,13 @@ class _ConnectForm extends State<ConnectForm> {
    void _submitSignUp() async {
     var interface = await NetworkInterface.list();
     ip = interface[0].addresses[0].address;
-    print("FORM: Signing Up");
+    // print("FORM: Signing Up");
     if (myController.text.contains("@")){
       final response = await signUpUsingAPI();
-      print(response.body);
+      //print(response.body);
       final res = jsonDecode(response.body);
 
-      print(res["status"]);
+      //print(res["status"]);
       if (res["status"] == "1") {
         setState(() {
         error1 = true;
@@ -187,6 +187,7 @@ class _ConnectForm extends State<ConnectForm> {
   }
 
   //useEffect()
+  @override
   void initState() {
     super.initState();
     WidgetsBinding.instance

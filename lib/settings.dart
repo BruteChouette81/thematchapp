@@ -31,10 +31,10 @@ class _Settings extends State<Settings> {
       // If the server did return a 200 OK response,
       // then parse the JSON.
       //print(response);
-      print(response.body);
+      //print(response.body);
 
       final infos = jsonDecode(response.body);
-      print(infos);
+      //print(infos);
 
       //update the state at refreash
       setState(() {

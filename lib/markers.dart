@@ -5,6 +5,7 @@ import './utils/tile_servers.dart';
 import './utils/utils.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+// ignore: depend_on_referenced_packages
 import 'package:latlng/latlng.dart';
 import 'package:map/map.dart';
 
@@ -35,8 +36,8 @@ class MarkersPageState extends State<MarkersPage> {
   Offset _pointedLocation = const Offset(0.0, 0.0);
   void _tapScreenRaster (MapTransformer transformer, Offset location) {
     widget.tapScreen(transformer.toLatLng(location));
-    print(controller.center.longitude.toString());
-    print(controller.center.latitude.toString());
+    //print(controller.center.longitude.toString());
+    //print(controller.center.latitude.toString());
     setState(() {
       _pointedLocation = location;
       markers = [transformer.toLatLng(location)];

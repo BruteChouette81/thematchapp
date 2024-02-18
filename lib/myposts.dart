@@ -16,9 +16,9 @@ class MyPosts extends StatefulWidget {
 }
 
 class _MyPosts extends State<MyPosts> {
-  final _Posted = <Widget>[];
+  final _posted = <Widget>[];
 
-
+  @override
   void initState() {
     super.initState();
     WidgetsBinding.instance
@@ -26,8 +26,8 @@ class _MyPosts extends State<MyPosts> {
   }
 
   Future deleteItem(String name) async {
-    final response = await http
-      .post(Uri.parse('http://localhost:8000/deleteEvent'), headers: <String, String>{
+    await http
+      .post(Uri.parse('http://localhost:8000/deleteEvent'), headers: <String, String>{ //final response = 
       'content-type': 'application/json',
       'event_name': name
     });
@@ -47,22 +47,22 @@ class _MyPosts extends State<MyPosts> {
       // If the server did return a 200 OK response,
       // then parse the JSON.
       //print(response);
-      print(response.body);
+      //print(response.body);
 
       final infos = jsonDecode(response.body);
-      print(infos);
+      //print(infos);
 
       //update the state at refreash
       setState(() {
         if(infos["mp"].length > 0) {
           for(var i =0; i<infos["mp"].length; i++) {
-            _Posted.add(Column(children: [Text(infos["mp"][i]["name"]), ElevatedButton(
+            _posted.add(Column(children: [Text(infos["mp"][i]["name"]), ElevatedButton(
           onPressed: () => deleteItem(infos["mp"][i]["name"]),
           child: const Text('Delete'),
          )],));
           }
         } else {
-          _Posted.add(const Text("No current post"));
+          _posted.add(const Text("No current post"));
         }
        
         
@@ -83,7 +83,7 @@ class _MyPosts extends State<MyPosts> {
         
         child: Column(
          
-          children: _Posted,
+          children: _posted,
         ),
       ),
     );

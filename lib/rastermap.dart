@@ -6,6 +6,7 @@ import './utils/tile_servers.dart';
 import './utils/viewport_painter.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+// ignore: depend_on_referenced_packages
 import 'package:latlng/latlng.dart';
 import 'package:map/map.dart';
 

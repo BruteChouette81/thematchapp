@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:thematchapp/friends.dart';
 import 'package:thematchapp/settings.dart';
 import 'package:thematchapp/minimap.dart';
-import 'package:thematchapp/myCalendar.dart';
+import 'package:thematchapp/mycalendar.dart';
 import 'package:latlng/latlng.dart';
 
 import './profilepage.dart';
@@ -96,12 +96,12 @@ class _NewEventForm extends State<NewEventForm> {
   }
 
   void _submitEvent() async {
-    print("FORM: submited");
+    //print("FORM: submited");
     if (myController.text != "") { 
-      var response = await createNewEvent();
-      print(response);
+      await createNewEvent(); //var response = 
+      //print(response);
     } else {
-      print("need name");
+      //print("need name");
     }
   }
 
@@ -213,12 +213,12 @@ class NavDrawer extends StatefulWidget {
 class _NavDrawer extends State<NavDrawer> {
 
   Future disconnect() async {
-     final response = await http
-      .post(Uri.parse('http://localhost:8000/disconnect'), headers: <String, String>{
+    await http
+      .post(Uri.parse('http://localhost:8000/disconnect'), headers: <String, String>{ //final response = 
       'content-type': 'application/json',
       'ip': widget.ip
     });
-    print(response);
+    //print(response);
   }
   @override
   Widget build(BuildContext context) {
@@ -399,7 +399,7 @@ class _Events extends State<Events> {
       'id': widget.event['id'].toString(),
     }) 
   } else {
-    print("not connected")
+    //print("not connected")
   } },
           child: const Text('Subscribe'),
          ), )],),) ) ) ,) :  Padding(padding: const EdgeInsets.all(8.0), child:Container(width:300, height: 200, decoration: const BoxDecoration(
@@ -418,7 +418,7 @@ class _Events extends State<Events> {
       'id': widget.event['id'].toString(),
     }) 
   } else {
-    print("not connected")
+    //print("not connected")
   } },
           child: const Text('Remove'),
          ), )],),) ) ) ,);
@@ -428,11 +428,11 @@ class _Events extends State<Events> {
 //Home page
 
 class _HomePageState extends State<TMA> {
-  int _counter = 0;
+  //int _counter = 0;
   bool _formActive = false;
   bool connected = false;
   String iip = "";
-  final _listOfEvents = <String>[];
+  //final _listOfEvents = <String>[];
   final _homeWidgets = <Widget>[];
 
   //event research settings/filter
@@ -452,10 +452,10 @@ class _HomePageState extends State<TMA> {
       // If the server did return a 200 OK response,
       // then parse the JSON.
       //print(response);
-      print(response.body);
+      //print(response.body);
 
       final events = jsonDecode(response.body);
-      print(events["events"].length.toString());
+      //print(events["events"].length.toString());
 
       //update the state at refreash
       setState(() {
@@ -473,7 +473,7 @@ class _HomePageState extends State<TMA> {
             //get the coords
             List latlng = events['eventInfos'][i]['coords'].split(", ");
             LatLng coords = LatLng(double.tryParse(latlng[0]) ?? 00.00, double.tryParse(latlng[1]) ?? 00.00);
-            print(coords.latitude);
+            //print(coords.latitude);
             _homeWidgets.add(Events(name: eventName, ip: ip, event: events['eventInfos'][i], connected: connected, coords:  coords, myItem: true,));
           }
         } else {
@@ -492,7 +492,7 @@ class _HomePageState extends State<TMA> {
       throw Exception('ERROR: Failed to load events');
     }
   }
-
+ @override
  void initState() {
     super.initState();
     WidgetsBinding.instance
@@ -514,14 +514,14 @@ class _HomePageState extends State<TMA> {
           ], */
 
 
-  void _incrementCounter() {
+  /*void _incrementCounter() {
     setState(() {
       //change display value
       _listOfEvents.add("test");
       _counter++;
       _homeWidgets.add(Text('${_listOfEvents.last}$_counter'));
     });
-  }
+  }*/
 
   void _activateForm() {
     setState(() {

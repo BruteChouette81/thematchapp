@@ -12,6 +12,11 @@ const bodyParser     = require('body-parser');
 let formidable = require('express-formidable');
 
 
+//ec2 instance: ssh -i C:\Users\Utilisateur\Documents\tma_server.pem ec2-user@ec2-3-99-248-62.ca-central-1.compute.amazonaws.com
+// cd thematchapp/server
+//pm2 start server ( stop pm2 stop 0)
+// http://ec2-3-99-248-62.ca-central-1.compute.amazonaws.com:8000/test
+// compiler: codemagic.io
 const fs = require('fs');
 const pinataSDK = require('@pinata/sdk');
 const { normalizePath } = require('@pinata/sdk');

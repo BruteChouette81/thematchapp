@@ -22,7 +22,7 @@ class _MyCalendar extends State<MyCalendar> {
   DateTime _selectedDay = DateTime.now(); 
 
   final _dispos = <Widget>[];
-
+  @override
   void initState() {
     super.initState();
     WidgetsBinding.instance
@@ -44,10 +44,10 @@ class _MyCalendar extends State<MyCalendar> {
       // If the server did return a 200 OK response,
       // then parse the JSON.
       //print(response);
-      print(response.body);
+      //print(response.body);
 
       final infos = jsonDecode(response.body);
-      print(infos);
+      //print(infos);
 
       //update the state at refreash
       setState(() {
@@ -80,11 +80,11 @@ class _MyCalendar extends State<MyCalendar> {
     if (response.statusCode == 200) {
       // If the server did return a 200 OK response,
       // then parse the JSON.
-      print(response);
+      //print(response);
       //print(response.body);
 
-      final infos = jsonDecode(response.body);
-      print(infos);
+     jsonDecode(response.body); // final infos = 
+      //print(infos);
        
         
     }
