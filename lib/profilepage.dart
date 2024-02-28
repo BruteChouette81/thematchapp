@@ -27,7 +27,7 @@ class _ConnectForm extends State<ConnectForm> {
   String name = "";
   String bio = "";
 
-  String sex = "";
+  String sex = "male";
   int age = 0;
   List<String> interestList = [];
 
@@ -78,38 +78,45 @@ class _ConnectForm extends State<ConnectForm> {
       //update the state at refreash
       setState(() {
         if(!(infos["status"] == 5)) {
-          ip = ip2;
-          if (infos["accountInfos"]["name"] != null) {
-            name = infos["accountInfos"]["name"];
-          } else {
-            name = "no name";
+           ip = ip2;
+          if(infos["accountInfos"] != null) {
+           
+            if (infos["accountInfos"]["name"] != null) {
+              name = infos["accountInfos"]["name"];
+            } else {
+              name = "no name";
+            }
+
+            if (infos["accountInfos"]["bio"] != null) {
+              bio = infos["accountInfos"]["bio"];
+            } else {
+              bio = "no bio";
+            }
+            if (infos["filters"]["sex"] != null) {
+              sex = infos["filters"]["sex"];
+            } else {
+              sex = "male";
+            }
+            if (infos["filters"]["age"] != null) {
+              age = int.parse(infos["filters"]["age"]);
+            } else {
+              age = 0;
+            }
+            if (infos["filters"]["interests"] != null) {
+
+              interestList = infos["filters"]["interests"].replaceAll("[", "").replaceAll("]", "").split(", "); //json.decode(infos["filters"]["interests"]).cast<String>().toList();
+            } else {
+              interestList = [];
+            }
+          }
+          if (infos["name"] != null) {
+              myController.text = infos["name"];
+              myPassController.text = infos["password"];
+              success = infos["connected"];
           }
 
-          if (infos["accountInfos"]["bio"] != null) {
-             bio = infos["accountInfos"]["bio"];
-          } else {
-             bio = "no bio";
-          }
-          if (infos["filters"]["sex"] != null) {
-            sex = infos["filters"]["sex"];
-          } else {
-            sex = "male";
-          }
-          if (infos["filters"]["age"] != null) {
-            age = int.parse(infos["filters"]["age"]);
-          } else {
-            age = 0;
-          }
-          if (infos["filters"]["interests"] != null) {
-
-            interestList = infos["filters"]["interests"].replaceAll("[", "").replaceAll("]", "").split(", "); //json.decode(infos["filters"]["interests"]).cast<String>().toList();
-          } else {
-            interestList = [];
-          }
-
-          myController.text = infos["name"];
-          myPassController.text = infos["password"];
-          success = infos["connected"];
+        
+          
         }
        
         

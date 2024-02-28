@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "server for thematchapp",
   "main": "server.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
@@ -21,7 +22,8 @@
     "form-data": "^4.0.0",
     "mongodb": "^2.2.16",
     "openai": "^4.27.0",
-    "vectra": "^0.5.5"
+    "vectra": "^0.5.5",
+    "weaviate-ts-embedded": "^1.2.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"

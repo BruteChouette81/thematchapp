@@ -1,7 +1,56 @@
-const express        = require('express');
+import express from 'express'
+import { LocalIndex } from 'vectra'
+import OpenAI  from 'openai'
+import path from'path'
+import weaviate from 'weaviate-ts-embedded';
+import { EmbeddedOptions } from 'weaviate-ts-embedded'
+
+const client = weaviate.client(new EmbeddedOptions())
+
+/*
+run embedded instance on other server and run clients on devices
+import weaviate, { EmbeddedClient, EmbeddedOptions } from 'weaviate-ts-embedded';
+
+const client: EmbeddedClient = weaviate.client(new EmbeddedOptions());
+await client.embedded.start();
+// use the client to interact with embedded Weaviate
+client.embedded.stop();*/
+
+//import OpenAI from "openai";
+
+//const index = new LocalIndex(path.join(__dirname, '..', 'index'));
+//const vectra = require("vectra")
+//const MongoClient    = require('mongodb').MongoClient;
+//const bodyParser     = require('body-parser');
+//const e = require('express');
+import formidable from 'express-formidable'
+
+
+//ec2 instance: ssh -i C:\Users\Utilisateur\Documents\tma_server.pem ec2-user@ec2-3-99-248-62.ca-central-1.compute.amazonaws.com
+// cd thematchapp/server
+//pm2 start server ( stop pm2 stop 0)
+// http://ec2-3-99-248-62.ca-central-1.compute.amazonaws.com:8000/test
+// compiler: codemagic.io
+import fs  from 'fs'
+import pinataSDK from '@pinata/sdk'
+import { normalizePath } from '@pinata/sdk'
+//
+
+/*const express        = require('express');
 const { LocalIndex } = require('vectra');
 const OpenAI  = require('openai');
 let path = require('path');
+const weaviate = require("weaviate-ts-embedded");
+
+/*
+run embedded instance on other server and run clients on devices
+import weaviate, { EmbeddedClient, EmbeddedOptions } from 'weaviate-ts-embedded';
+
+const client: EmbeddedClient = weaviate.client(new EmbeddedOptions());
+await client.embedded.start();
+// use the client to interact with embedded Weaviate
+client.embedded.stop();
+
 //import OpenAI from "openai";
 
 const index = new LocalIndex(path.join(__dirname, '..', 'index'));
@@ -20,6 +69,7 @@ let formidable = require('express-formidable');
 const fs = require('fs');
 const pinataSDK = require('@pinata/sdk');
 const { normalizePath } = require('@pinata/sdk');
+ */
 
 //embeddings
 //const tf = require('@tensorflow/tfjs-node');
@@ -75,7 +125,7 @@ async function boot() {
 }
 
 
-const api = new OpenAI({apiKey: `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`});
+//const api = new OpenAI({apiKey: `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`});
 
 
 /* Add items
@@ -86,7 +136,7 @@ await addItem('blue');
 */
 app.listen(8000, () => {  
     console.log('Server.js on localhost:8000');
-    boot();
+    //boot();
 });
 
 //vector db helper functions
