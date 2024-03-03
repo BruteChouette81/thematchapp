@@ -1,11 +1,11 @@
 import express from 'express'
-import { LocalIndex } from 'vectra'
-import OpenAI  from 'openai'
-import path from'path'
-import weaviate from 'weaviate-ts-embedded';
-import { EmbeddedOptions } from 'weaviate-ts-embedded'
+//import { LocalIndex } from 'vectra'
+//import OpenAI  from 'openai'
+//import path from'path'
+//import weaviate from 'weaviate-ts-embedded';
+//import { EmbeddedOptions } from 'weaviate-ts-embedded'
 
-const client = weaviate.client(new EmbeddedOptions())
+//const client = weaviate.client(new EmbeddedOptions())
 
 /*
 run embedded instance on other server and run clients on devices
