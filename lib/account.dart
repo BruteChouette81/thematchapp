@@ -241,7 +241,7 @@ class _Account extends State<Account> {
         if(events["events"].length > 0) {
           for(var i =0; i<events["events"].length; i++) {
               List latlng = events['events'][i]['coords'].split(", ");
-              LatLng coords = LatLng(double.tryParse(latlng[0]) ?? 00.00, double.tryParse(latlng[1]) ?? 00.00);
+              LatLng coords = LatLng(Angle.degree(double.tryParse(latlng[0]) ?? 00.00), Angle.degree(double.tryParse(latlng[1]) ?? 00.00));
               //print(coords.latitude);
               _events.add(Events(name: events["events"][i]["name"], ip: ip2, event: events["events"][i], connected: true, coords: coords, myItem: false));
           }

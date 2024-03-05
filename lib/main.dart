@@ -75,10 +75,11 @@ class _NewEventForm extends State<NewEventForm> {
 
   DateTime _selectedDay = DateTime.now(); 
 
-  LatLng _pointedLocation = const LatLng(0.0, 0.0);
+  LatLng _pointedLocation = const LatLng(Angle.degree(0.0), Angle.degree(0.0));
 
   void tapScreen(LatLng position) {
     //return the selected position
+    
     setState(() {
       _pointedLocation = position;
     });
@@ -96,7 +97,7 @@ class _NewEventForm extends State<NewEventForm> {
       'content-type': 'application/json',
       'event_name': myController.text,
       'ip': ip,
-      'coords': '${_pointedLocation.latitude.toString()}, ${_pointedLocation.longitude.toString()}',
+      'coords': '${_pointedLocation.latitude.toString().split(" ")[0].replaceAll("°", "")}, ${_pointedLocation.longitude.toString().split(" ")[0].replaceAll("°", "")}',
       "date": '$_selectedDay'
     } ); 
   }
@@ -142,8 +143,8 @@ class _NewEventForm extends State<NewEventForm> {
   @override
   Widget build(BuildContext context) {
     return submited ? AlertDialog(
-            title: const Text('You deleted your post!'),
-            content: const Text('Refresh to actualize.'),
+            title: const Text('You submitted your post!'),
+            content: const Text('Click on ok to return to home page.'),
             actions: <Widget>[
               TextButton(
                 onPressed: () => setState(() => widget.activate()),
@@ -167,7 +168,7 @@ class _NewEventForm extends State<NewEventForm> {
       ),
       body: MarkersPage(tapScreen: tapScreen) //add marker for events
   
-      ) : Column(
+      ) : SingleChildScrollView( child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
          Padding(
@@ -214,7 +215,7 @@ class _NewEventForm extends State<NewEventForm> {
          ))
          
       ], 
-    );
+    ));
   }
 }
 
@@ -553,7 +554,7 @@ class _HomePageState extends State<TMA> {
             String eventName = events["events"][i];
             //get the coords
             List latlng = events['eventInfos'][i]['coords'].split(", ");
-            LatLng coords = LatLng(double.tryParse(latlng[0]) ?? 00.00, double.tryParse(latlng[1]) ?? 00.00);
+            LatLng coords = LatLng(Angle.degree(double.tryParse(latlng[0]) ?? 00.00), Angle.degree(double.tryParse(latlng[1]) ?? 00.00));
             //print(coords.latitude);
             _homeWidgets.add(Events(name: eventName, ip: ip, event: events['eventInfos'][i], connected: connected, coords:  coords, myItem: true,));
           }

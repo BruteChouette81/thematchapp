@@ -20,16 +20,16 @@ class MarkersPage extends StatefulWidget {
 
 class MarkersPageState extends State<MarkersPage> {
   final controller = MapController(
-    location: const LatLng(45.54, -73.55),
+    location: const LatLng(Angle.degree(45.54), Angle.degree(-73.55)),
     zoom: 8
   );
 
   var markers = [
-   const LatLng(45.54, -73.55),
+   const LatLng(Angle.degree(45.54), Angle.degree(-73.55)),
   ];
 
   void _gotoDefault() {
-    controller.center = const LatLng(45.54, -73.55);
+    controller.center = const LatLng(Angle.degree(45.54), Angle.degree(-73.55));
     setState(() {});
   }
 
