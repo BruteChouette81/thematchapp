@@ -3,6 +3,10 @@ import 'package:http/http.dart' as http;
 import 'dart:io';
 import 'dart:convert';
 
+import './utils/get_server.dart';
+
+String server = getString(); //http://localhost:8000
+
 class Settings extends StatefulWidget {
   const Settings({super.key});
   
@@ -22,7 +26,7 @@ class _Settings extends State<Settings> {
     String ip2 = interface[0].addresses[0].address;
 
     final response = await http
-      .post(Uri.parse('http://localhost:8000/connected'), headers: <String, String>{
+      .post(Uri.parse('$server/connected'), headers: <String, String>{
       'content-type': 'application/json',
       'ip': ip2
     });

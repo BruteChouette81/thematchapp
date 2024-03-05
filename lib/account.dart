@@ -14,6 +14,10 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:thematchapp/main.dart';
 
+import './utils/get_server.dart';
+
+String server = getString(); //http://localhost:8000
+
 class Account extends StatefulWidget{
   const Account({super.key, required this.user, required this.password, required this.ip, required this.name, required this.bio, required this.sex, required this.age, required this.interests});
   
@@ -51,7 +55,7 @@ class _AccountSetting extends State<AccountSettings> {
     var interface = await NetworkInterface.list();
     String ip = interface[0].addresses[0].address;
 
-    return http.post(Uri.parse('http://localhost:8000/accountInfos'), headers: <String, String>{
+    return http.post(Uri.parse('$server/accountInfos'), headers: <String, String>{
       'content-type': 'application/json',
       'name': nameController.text,
       'ip': ip,
@@ -126,6 +130,7 @@ class _AccountSetting extends State<AccountSettings> {
 
 class _Account extends State<Account> {
 
+  //bool removed = false;
   final ageController = TextEditingController();
   final intController = TextEditingController();
   String sex = "male"; //0 female, 1 male 
@@ -179,7 +184,7 @@ class _Account extends State<Account> {
     var interface = await NetworkInterface.list();
     String ip2 = interface[0].addresses[0].address;
     await http 
-      .post(Uri.parse('http://localhost:8000/unQueue'), headers: <String, String>{ //final response = 
+      .post(Uri.parse('$server/unQueue'), headers: <String, String>{ //final response = 
       'content-type': 'application/json',
       'ip': ip2,
       'id': eventID.toString()
@@ -211,7 +216,7 @@ class _Account extends State<Account> {
     setState(() {});
 
     final response = await http
-      .post(Uri.parse('http://localhost:8000/queueList'), headers: <String, String>{
+      .post(Uri.parse('$server/queueList'), headers: <String, String>{
       'content-type': 'application/json',
       'ip': ip2
     });
@@ -267,7 +272,7 @@ class _Account extends State<Account> {
       }, body: jsonEncode(<String, dynamic>{"file": file}),  );*/
       
       
-      var request = http.MultipartRequest("POST", Uri.parse('http://localhost:8000/profilePicture'));
+      var request = http.MultipartRequest("POST", Uri.parse('$server/profilePicture'));
       request.fields['ip'] = ip2;
       request.files.add(await http.MultipartFile.fromPath(
           'file',
@@ -287,7 +292,7 @@ class _Account extends State<Account> {
 
   Future disconnect() async {
     await http
-      .post(Uri.parse('http://localhost:8000/disconnect'), headers: <String, String>{ //final response = 
+      .post(Uri.parse('$server/disconnect'), headers: <String, String>{ //final response = 
       'content-type': 'application/json',
       'ip': widget.ip
     });
@@ -296,7 +301,7 @@ class _Account extends State<Account> {
 
   Future _submitFilters() async {
    await http 
-      .post(Uri.parse('http://localhost:8000/filters'), headers: <String, String>{ // final response = 
+      .post(Uri.parse('$server/filters'), headers: <String, String>{ // final response = 
       'content-type': 'application/json',
       'ip': widget.ip,
       'sex': sex,
@@ -409,7 +414,7 @@ class _Account extends State<Account> {
       
             child: Column(
       
-              children: _events
+              children:  _events
             )
           )]));
   }

@@ -22,8 +22,15 @@ import 'package:http/http.dart' as http; //http package
 //import 'package:google_maps_flutter/google_maps_flutter.dart'; //google maps package
 //import 'package:map/map.dart';
 import 'package:table_calendar/table_calendar.dart';
-
 import 'dart:io';
+
+import './utils/get_server.dart';
+
+String server = getString(); //http://localhost:8000
+
+bool enteringMinimap = false;
+
+
 
 void main() {
   runApp(const MyApp());
@@ -50,7 +57,10 @@ class MyApp extends StatelessWidget {
 }
 
 class NewEventForm extends StatefulWidget {
-  const NewEventForm({super.key});
+  const NewEventForm({super.key, required this.activate, required this.notifyParent});
+
+  final Function activate;
+  final Function notifyParent;
 
   @override
   State<NewEventForm> createState() => _NewEventForm();
@@ -60,7 +70,8 @@ class NewEventForm extends StatefulWidget {
 
 class _NewEventForm extends State<NewEventForm> {
   final myController = TextEditingController();
-  bool mapDisplay = false;
+  bool submited = false;
+  //bool mapDisplay = false;
 
   DateTime _selectedDay = DateTime.now(); 
 
@@ -75,10 +86,13 @@ class _NewEventForm extends State<NewEventForm> {
   }
 
   Future<http.Response> createNewEvent() async {
+    setState(() {
+      submited = true;
+    });
     var interface = await NetworkInterface.list();
     String ip = interface[0].addresses[0].address;
 
-    return http.post(Uri.parse('http://localhost:8000/newEvent'), headers: <String, String>{
+    return http.post(Uri.parse('$server/newEvent'), headers: <String, String>{
       'content-type': 'application/json',
       'event_name': myController.text,
       'ip': ip,
@@ -104,17 +118,22 @@ class _NewEventForm extends State<NewEventForm> {
       //print("need name");
     }
   }
-
   void _displayMap() {
     setState(() {
-      if (mapDisplay) {
-        mapDisplay = false;
+      if (enteringMinimap) {
+        //mapDisplay = false;
+        enteringMinimap = false;
+        widget.notifyParent();
       } else {
-         mapDisplay=true;
+         //mapDisplay=true;
+         enteringMinimap = true;
+         widget.notifyParent();
       } 
      
     });
   }
+
+  
   /*Center(child: ElevatedButton(
           onPressed: _displayMap,
           child: const Text('Map view'),
@@ -122,7 +141,20 @@ class _NewEventForm extends State<NewEventForm> {
 
   @override
   Widget build(BuildContext context) {
-    return mapDisplay ? Scaffold(
+    return submited ? AlertDialog(
+            title: const Text('You deleted your post!'),
+            content: const Text('Refresh to actualize.'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => setState(() => widget.activate()),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () => setState(() => widget.activate()),
+                child: const Text('OK'),
+              ),
+            ],
+          ) :enteringMinimap ? Scaffold(
       appBar: AppBar(
         //navigation
         
@@ -214,7 +246,7 @@ class _NavDrawer extends State<NavDrawer> {
 
   Future disconnect() async {
     await http
-      .post(Uri.parse('http://localhost:8000/disconnect'), headers: <String, String>{ //final response = 
+      .post(Uri.parse('$server/disconnect'), headers: <String, String>{ //final response = 
       'content-type': 'application/json',
       'ip': widget.ip
     });
@@ -380,10 +412,53 @@ class Events extends StatefulWidget {
 
 class _Events extends State<Events> {
 
+  bool subbing = false;
+  bool notconnected = false;
+  bool removed = false;
+
   @override
   Widget build(BuildContext context) {
     //build UI function
-    return widget.myItem ? Padding(padding: const EdgeInsets.all(8.0), child:Container(width:300, height: 200, decoration: const BoxDecoration(
+    return subbing ? AlertDialog(
+            title: const Text('You subscribed!'),
+            content: const Text('Check your profile for more information.'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => setState(() => subbing = false),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () => setState(() => subbing = false),
+                child: const Text('OK'),
+              ),
+            ],
+          ): notconnected ? AlertDialog(
+            title: const Text('You must be connected in order to subscribe to events.'),
+            content: const Text('Click on the Profile section in order to create or connect to an account!'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => setState(() => notconnected = false),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () => setState(() => notconnected = false),
+                child: const Text('OK'),
+              ),
+            ],
+          ): removed ? AlertDialog(
+            title: const Text('You unsubscribed to the post!'),
+            content: const Text('Refresh to actualize.'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => setState(() => removed = false),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () => setState(() => removed = false),
+                child: const Text('OK'),
+              ),
+            ],
+          ): widget.myItem ? Padding(padding: const EdgeInsets.all(8.0), child:Container(width:300, height: 200, decoration: const BoxDecoration(
               borderRadius: BorderRadius.all(Radius.circular(15.0)),
               color: Color.fromARGB(137, 0, 140, 255),
             ), child: Scaffold( 
@@ -393,12 +468,15 @@ class _Events extends State<Events> {
       children: [Text(widget.name), MinimapPage(coords: widget.coords) ,Padding(padding: const EdgeInsets.all(7.0), child: ElevatedButton(
           onPressed:  () => { if (widget.connected) {
             http
-      .post(Uri.parse('http://localhost:8000/queue'), headers: {
+      .post(Uri.parse('$server/queue'), headers: {
       'content-type': 'application/json',
       'ip': widget.ip,
       'id': widget.event['id'].toString(),
-    }) 
+    }).then((value) => setState(() => subbing = true))
+    
   } else {
+    
+    setState(() => notconnected = true)
     //print("not connected")
   } },
           child: const Text('Subscribe'),
@@ -412,11 +490,11 @@ class _Events extends State<Events> {
       children: [Text(widget.name), MinimapPage(coords: widget.coords) ,Padding(padding: const EdgeInsets.all(7.0), child: ElevatedButton(
           onPressed:  () => { if (widget.connected) {
             http
-      .post(Uri.parse('http://localhost:8000/unQueue'), headers: {
+      .post(Uri.parse('$server/unQueue'), headers: {
       'content-type': 'application/json',
       'ip': widget.ip,
       'id': widget.event['id'].toString(),
-    }) 
+    }).then((value) => setState(() => removed = true))
   } else {
     //print("not connected")
   } },
@@ -435,6 +513,9 @@ class _HomePageState extends State<TMA> {
   //final _listOfEvents = <String>[];
   final _homeWidgets = <Widget>[];
 
+  refresh() {
+    setState(() {});
+  }
   //event research settings/filter
   final List<String> list = <String>['Most recent', 'Location(near me)', 'My dispos', 'Recommended'];
   String dropdownValue = "Most recent";
@@ -446,7 +527,7 @@ class _HomePageState extends State<TMA> {
     iip = ip;
 
     final response = await http
-      .get(Uri.parse('http://localhost:8000/events'));
+      .get(Uri.parse('$server/events'));
 
     if (response.statusCode == 200) {
       // If the server did return a 200 OK response,
@@ -555,7 +636,7 @@ class _HomePageState extends State<TMA> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      body: _formActive ? const NewEventForm() : Center(
+      body: _formActive ?  NewEventForm(activate: _activateForm, notifyParent: refresh,) : Center(
        
         child: Column(children: [const Text("Research filters"), DropdownButton<String>(
       value: dropdownValue,
@@ -587,6 +668,12 @@ class _HomePageState extends State<TMA> {
         onPressed: _activateForm,
         tooltip: 'Create',
         child: const Icon(Icons.add),
+      ) : enteringMinimap ? FloatingActionButton(
+        onPressed: () => setState(() {
+          enteringMinimap=false;
+        }),
+        tooltip: 'return',
+        child: const Icon(Icons.keyboard_return),
       ) : FloatingActionButton(
         onPressed: _activateForm,
         tooltip: 'Cancel',

@@ -1,8 +1,8 @@
-import express from 'express'
+const express = require('express');
 //import { LocalIndex } from 'vectra'
 //import OpenAI  from 'openai'
 //import path from'path'
-//import weaviate from 'weaviate-ts-embedded';
+//const weaviate = require('weaviate-ts-embedded');
 //import { EmbeddedOptions } from 'weaviate-ts-embedded'
 
 //const client = weaviate.client(new EmbeddedOptions())
@@ -23,7 +23,7 @@ client.embedded.stop();*/
 //const MongoClient    = require('mongodb').MongoClient;
 //const bodyParser     = require('body-parser');
 //const e = require('express');
-import formidable from 'express-formidable'
+const formidable = require('express-formidable')
 
 
 //ec2 instance: ssh -i C:\Users\Utilisateur\Documents\tma_server.pem ec2-user@ec2-3-99-248-62.ca-central-1.compute.amazonaws.com
@@ -31,9 +31,9 @@ import formidable from 'express-formidable'
 //pm2 start server ( stop pm2 stop 0)
 // http://ec2-3-99-248-62.ca-central-1.compute.amazonaws.com:8000/test
 // compiler: codemagic.io
-import fs  from 'fs'
-import pinataSDK from '@pinata/sdk'
-import { normalizePath } from '@pinata/sdk'
+const fs  = require('fs')
+const pinataSDK = require('@pinata/sdk');
+//import { normalizePath } from '@pinata/sdk'
 //
 
 /*const express        = require('express');

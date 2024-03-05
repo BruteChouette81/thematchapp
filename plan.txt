@@ -29,13 +29,13 @@ DB:
 
 ---------------------------------
 
-- account
+- account DONE ✔️
 
 - My calendar DONE ✔️ ==> add UI
 - form DONE ✔️: 
     - working when creating a post DONE ✔️
     - draw pointers to the screen DONE ✔️
-    - add a DONE button 
+    - add a DONE button  DONE ✔️
     - specify what time of the day is the event (length)
     - add ui
 - post EVENTS:
@@ -52,15 +52,24 @@ DB:
 - Profile page:
     - profile picture DONE ✔️
     - add users infos ==> add form to input and view ==> display infos DONE ✔️ 
-    - add preference for matching algo ==> filters
+    - add preference for matching algo ==> filters DONE ✔️
     - add UI 
-- Friend page 
-- add notification when subscribing, deleting, removing, submit event
+- Friend page ==> to early
+- add notification when subscribing  DONE ✔️, deleting DONE ✔️, removing DONE ✔️, submit event DONE ✔️
 - error notification 
 - manage deleted events DONE ✔️
 - remove DONE ✔️
 - delete DONE ✔️ ==> add a deleted event message to subscribe users
 
+server: 
+    -up DONE ✔️
+    -p2p
+    -ai 
+    -combined with ec2 ==>later
+
+app: 
+ - up on ios ==> get logs
+ - up on android ==> test
 
 
 
@@ -70,13 +79,12 @@ format:
 User input: age-sex-[interests embeddings], event input: age(founder)-sex(founder)-[embedding of the event sport]
 compare embeddings and lowest score difference = high ranked
 
-Elo rating users to connect with events 
+Elo/sigmoid (vector db or neural net?)rating users to connect with events 
 
 calitative score: embbed different qualities and produce a sigmoid output for likelyness 
 then compare score to create a Elo rating of match and get a top K f.e 10 match
 
 ==> qualities: calendar, map and other fact with more and more data
-
 
 Match filters (profile) for recommendation algo and normal filters (main.dart) that are additionnable for view page 
 

@@ -8,6 +8,10 @@ import 'dart:io';
 
 import 'package:thematchapp/account.dart';
 
+import './utils/get_server.dart';
+
+String server = getString(); //http://localhost:8000 //http://localhost:8000
+
 class ConnectForm extends StatefulWidget {
   const ConnectForm({super.key});
   
@@ -39,7 +43,7 @@ class _ConnectForm extends State<ConnectForm> {
   bool success = false;
 
   Future<http.Response> connectUsingAPI() {
-    return http.post(Uri.parse('http://localhost:8000/connect'), headers: <String, String>{
+    return http.post(Uri.parse('$server/connect'), headers: <String, String>{
       'content-type': 'application/json',
       'user_name': myController.text,
       'password': myPassController.text,
@@ -48,7 +52,7 @@ class _ConnectForm extends State<ConnectForm> {
   }
 
   Future<http.Response> signUpUsingAPI() {
-    return http.post(Uri.parse('http://localhost:8000/signup'), headers: <String, String>{
+    return http.post(Uri.parse('$server/signup'), headers: <String, String>{
       'content-type': 'application/json',
       'user_name': myController.text,
       'password': myPassController.text,
@@ -61,7 +65,7 @@ class _ConnectForm extends State<ConnectForm> {
     String ip2 = interface[0].addresses[0].address;
 
     final response = await http
-      .post(Uri.parse('http://localhost:8000/connected'), headers: <String, String>{
+      .post(Uri.parse('$server/connected'), headers: <String, String>{
       'content-type': 'application/json',
       'ip': ip2
     });

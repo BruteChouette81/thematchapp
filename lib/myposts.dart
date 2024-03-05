@@ -5,6 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:io';
 
+import './utils/get_server.dart';
+
+String server = getString(); //http://localhost:8000
+
 
 class MyPosts extends StatefulWidget {
   const MyPosts({super.key});
@@ -17,6 +21,7 @@ class MyPosts extends StatefulWidget {
 
 class _MyPosts extends State<MyPosts> {
   final _posted = <Widget>[];
+  bool deleted = false;
 
   @override
   void initState() {
@@ -26,8 +31,11 @@ class _MyPosts extends State<MyPosts> {
   }
 
   Future deleteItem(String name) async {
+    setState(() {
+      deleted  = true;
+    });
     await http
-      .post(Uri.parse('http://localhost:8000/deleteEvent'), headers: <String, String>{ //final response = 
+      .post(Uri.parse('$server/deleteEvent'), headers: <String, String>{ //final response = 
       'content-type': 'application/json',
       'event_name': name
     });
@@ -38,7 +46,7 @@ class _MyPosts extends State<MyPosts> {
     String ip2 = interface[0].addresses[0].address;
 
     final response = await http
-      .post(Uri.parse('http://localhost:8000/mypost'), headers: <String, String>{
+      .post(Uri.parse('$server/mypost'), headers: <String, String>{
       'content-type': 'application/json',
       'ip': ip2
     });
@@ -83,7 +91,20 @@ class _MyPosts extends State<MyPosts> {
         
         child: Column(
          
-          children: _posted,
+          children:  deleted ? [AlertDialog(
+            title: const Text('You deleted your post!'),
+            content: const Text('Refresh to actualize.'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => setState(() => deleted = false),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () => setState(() => deleted = false),
+                child: const Text('OK'),
+              ),
+            ],
+          )]: _posted,
         ),
       ),
     );

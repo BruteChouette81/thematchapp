@@ -7,6 +7,9 @@ import 'dart:convert';
 
 //import 'package:http/http.dart' as http;
 //import 'dart:io';
+import './utils/get_server.dart';
+
+String server = getString(); //http://localhost:8000
 
 
 class MyCalendar extends StatefulWidget {
@@ -35,7 +38,7 @@ class _MyCalendar extends State<MyCalendar> {
     String ip2 = interface[0].addresses[0].address;
 
     final response = await http
-      .post(Uri.parse('http://localhost:8000/listDispo'), headers: <String, String>{
+      .post(Uri.parse('$server/listDispo'), headers: <String, String>{
       'content-type': 'application/json',
       'ip': ip2
     });
@@ -71,7 +74,7 @@ class _MyCalendar extends State<MyCalendar> {
     String ip2 = interface[0].addresses[0].address;
 
     final response = await http
-      .post(Uri.parse('http://localhost:8000/addDispo'), headers: <String, String>{
+      .post(Uri.parse('$server/addDispo'), headers: <String, String>{
       'content-type': 'application/json',
       'ip': ip2,
       'date': '$_selectedDay'
